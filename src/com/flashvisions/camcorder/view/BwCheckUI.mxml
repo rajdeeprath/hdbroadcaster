@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark">
+
+	<fx:Script>
+		<![CDATA[
+			[Bindable]
+			public var message:String; 
+		]]>
+	</fx:Script>
+	
+	<s:BitmapImage height="25" horizontalCenter="0" scaleMode="stretch"
+				   source="@Embed(source='assets/ajax-loader.gif')" verticalCenter="0"/>
+	<s:Label fontFamily="Arial" fontSize="14" fontWeight="bold" horizontalCenter="0"
+			 text="PLEASE WAIT" verticalCenter="2"/>
+	
+</s:Group>

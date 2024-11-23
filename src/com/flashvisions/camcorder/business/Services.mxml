@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cairngorm:ServiceLocator xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:cairngorm="com.adobe.cairngorm.business.*" xmlns:s="library://ns.adobe.com/flex/spark" >
+	<mx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		]]>
+	</mx:Script>
+	<s:RemoteObject id="localService" endpoint="{(modelLocator.gatewayURL)}" source="{modelLocator.serviceName}" destination="*" >
+	<s:method name="loadSettings"/>
+	</s:RemoteObject>
+	
+</cairngorm:ServiceLocator>

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"
+		 xmlns:s="library://ns.adobe.com/flex/spark"
+		 xmlns:local="*"	 width="215" height="155" filters="{[shadow]}">
+	
+	<fx:Declarations>
+		<s:DropShadowFilter blurX="6" blurY="6" distance="4"  id="shadow" />
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.event.MicrophoneEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import flash.utils.clearInterval;
+			import flash.utils.clearTimeout;
+			import flash.utils.setInterval;
+			
+			import mx.events.FlexEvent;
+			import mx.events.ItemClickEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			[Bindable]
+			private var themeColor:*;
+			
+			private var counter:uint;
+			
+			protected function videoPermissionChanged(e:Event):void
+			{
+				modelLocator.allowVideo = cbxAllowVideo.selected;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+			}
+			
+			protected function audioPermissionChanged(e:Event):void
+			{
+				modelLocator.allowAudio = cbxAllowAudio.selected;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+			}
+			
+			// Event Handlers 
+			
+			private function cameraChanged(event:Event):void
+			{
+				modelLocator.cameraIndex = cmbCameras.selectedItem.data;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.CAMERA_SOURCE_CHANGE));
+			}
+			
+			protected function microphoneChanged(event:Event):void
+			{
+				modelLocator.micIndex = cmbMicrophones.selectedItem.data;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_SOURCE_CHANGE));
+			}
+
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.HIDECALIBRATIONWIZARD));
+			}
+
+			
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				Security.showSettings(SecurityPanel.DEFAULT);
+			}
+			
+			protected function cbxAllowVideo_changeHandler(event:Event):void
+			{
+				//modelLocator.allowVideo = cbxAllowVideo.selected;
+				if(cbxAllowVideo.selected)
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.ENABLEVIDEOBROADCAST));
+				else
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.DISABLEVIDEOBROADCAST));
+			}
+			
+			protected function cbxAllowAudio_changeHandler(event:Event):void
+			{
+				//modelLocator.allowAudio = 	cbxAllowAudio.selected;
+				if(cbxAllowAudio.selected)
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.ENABLEAUDIOBROADCAST));
+				else
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.DISABLEAUDIOBROADCAST));
+			}
+
+			
+		]]>
+	</fx:Script>
+	<s:states>
+		<s:State name="Settings"/>
+	</s:states>
+	
+	<s:VGroup top="12" width="200" fontSize="11" gap="2" horizontalCenter="0">
+		<s:BorderContainer width="100%" alpha=".8" cornerRadius="5">
+			<s:layout>
+				<s:VerticalLayout paddingLeft="5" paddingRight="5"/>
+			</s:layout>
+			
+			
+			<s:VGroup width="100%" gap="4">
+				<s:Spacer height="2"/>
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label fontWeight="bold" text="Video Device"/>	
+					<s:Spacer width="100%"/>
+					<s:CheckBox id="cbxAllowVideo" label="VIDEO"
+								selected="{modelLocator.allowVideo}" enabled="{modelLocator.mode == null &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting &amp;&amp; modelLocator.camera}"
+								fontSize="10" fontWeight="bold" change="cbxAllowVideo_changeHandler(event)"/>
+				</s:HGroup>
+				
+				<s:HGroup width="100%">
+					<s:DropDownList id="cmbCameras" width="100%" change="cameraChanged(event)"
+									cornerRadius="0" dataProvider="{modelLocator.cameras}"
+									enabled="{!modelLocator.disableVideo}" labelField="label"
+									selectedIndex="{modelLocator.cameraIndex}" />
+				</s:HGroup>
+				
+				<s:HGroup width="100%" verticalAlign="middle">
+					<s:Label fontWeight="bold" text="Audio Device"/>
+					<s:Spacer width="100%"/>
+					<s:CheckBox id="cbxAllowAudio" label="AUDIO"
+								selected="{modelLocator.allowAudio}" enabled="{modelLocator.mode == null &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting &amp;&amp; modelLocator.mic}"
+								fontSize="10" fontWeight="bold" change="cbxAllowAudio_changeHandler(event)"/>
+				</s:HGroup>
+				
+				<s:HGroup width="100%">
+					<s:DropDownList id="cmbMicrophones" width="100%"
+									change="microphoneChanged(event)" cornerRadius="0"
+									dataProvider="{modelLocator.microphones}"
+									enabled="{!modelLocator.disableAudio}" labelField="label"
+									selectedIndex="{modelLocator.micIndex}" />
+				</s:HGroup>
+				
+				<local:VolumeGauge height="2" width="100%" value="{modelLocator.micActiivity/100}" enabled="{modelLocator.micActiivity>=0}" alpha="{(modelLocator.micActiivity>=0)?1:.2}" />
+				
+				
+			</s:VGroup>
+		</s:BorderContainer>
+		<s:Spacer width="1" height="100%"/>
+		
+		<s:HGroup width="100%" height="20" gap="3" horizontalAlign="right">
+			<s:Button label="Flash Player Settings" fontSize="12" click="button2_clickHandler(event)"/>
+			<s:Button width="60" label="Close" click="button1_clickHandler(event)" fontSize="12"
+					  fontWeight="normal"/>
+		</s:HGroup>
+		
+	</s:VGroup>
+	
+</s:Group>

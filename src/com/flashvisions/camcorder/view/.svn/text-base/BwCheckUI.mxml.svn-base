@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Box horizontalAlign="center" verticalAlign="middle" xmlns:mx="http://www.adobe.com/2006/mxml" width="200" height="60" backgroundColor="#FFFFFF" borderStyle="solid">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var message:String; 
+		]]>
+	</mx:Script>
+	<mx:ProgressBar labelPlacement="center" label="{message}" indeterminate="true" color="#000000" fontSize="12" fontFamily="Arial" width="150" height="25"/>
+	
+</mx:Box>

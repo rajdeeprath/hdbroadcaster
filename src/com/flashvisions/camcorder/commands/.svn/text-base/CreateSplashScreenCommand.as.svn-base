@@ -1,0 +1,21 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	import com.flashvisions.camcorder.view.SplashScreen;
+	import flash.display.DisplayObject;
+	import mx.core.FlexGlobals;
+	import mx.managers.PopUpManager;
+	
+	public class CreateSplashScreenCommand implements ICommand
+	{
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		public function execute(event:CairngormEvent):void
+		{
+			modelLocator.splash = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject,SplashScreen,true);
+			PopUpManager.centerPopUp(modelLocator.splash);
+		}
+	}
+}

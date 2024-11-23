@@ -1,0 +1,61 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.flashvisions.camcorder.business.VideoFeedsDelegate;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	
+	import mx.collections.ArrayCollection;
+	
+	import mx.events.FlexEvent;
+	import mx.rpc.IResponder;
+	import mx.rpc.events.FaultEvent;
+	import mx.rpc.events.ResultEvent;
+	
+	public class LoadVideoFeedCommand implements ICommand,IResponder
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		
+		public function execute(event:CairngormEvent):void
+		{
+			if(modelLocator.videoFeeds == null)
+			{
+				modelLocator.videoFeeds = new ArrayCollection();
+				var feedsDelegate:VideoFeedsDelegate = new VideoFeedsDelegate(this);
+				feedsDelegate.loadFeed();
+			}
+		}
+		
+		/* Event Handlers */
+		
+		public function result(event:Object):void
+		{
+			var rs:ResultEvent = event as ResultEvent;
+			
+			var videoFeed:XML  = XML(rs.result);
+			var feeds:XMLList = videoFeed.channel.item;
+			
+			for(var i:int = 0; i<feeds.length();i++)
+			{
+				var item:Object = new Object();
+				
+				item.label = feeds[i].title;
+				item.video = feeds[i].link;
+				item.preview = feeds[i].image;
+				item.description = feeds[i].description;
+				item.pubDate = feeds[i].pubDate;
+				item.author = feeds[i].author;
+				
+				modelLocator.videoFeeds.addItem(item);
+			}
+		}
+		
+		public function fault(event:Object):void
+		{
+			var fe:FaultEvent = event as FaultEvent;
+			Alert.show(fe.message.toString());
+		}
+	}
+}

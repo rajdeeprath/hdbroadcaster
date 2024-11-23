@@ -1,0 +1,21 @@
+package com.flashvisions.camcorder
+{
+	public class BroadcastQuality
+	{
+		public static const BROADCAST_MAX:String 	= "BROADCAST MAX (6 Mbps)";
+		public static const TV_BEST:String 			= "TV BEST (4 Mbps)";
+		public static const TV_HIGH:String 			= "TV HIGH (3 Mbps)";
+		public static const TV_GOOD:String 			= "TV GOOD (2 Mbps)";
+		public static const TV_AVERAGE:String 		= "TV AVERAGE (1.5 Mbps)";
+		
+		public static const BEST:String 			= "WEB BEST (1.2 Mbps)";
+		public static const HIGH:String 			= "WEB HIGH (768 Kbps)";
+		public static const GOOD:String 			= "WEB GOOD (384 Kbps)";
+		public static const AVERAGE:String 			= "WEB AVERAGE (256 kbps)";
+		public static const LOW:String 				= "WEB LOW (56 kbps)";
+		
+		public function BroadcastQuality()
+		{
+		}
+	}
+}

@@ -1,0 +1,115 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.AirUtils.Logger;
+	import com.flashvisions.camcorder.event.BroadcastEvent;
+	import com.flashvisions.camcorder.event.CameraEvent;
+	import com.flashvisions.camcorder.event.NotificationEvent;
+	import com.flashvisions.camcorder.event.StreamEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	
+	import flash.events.NetStatusEvent;
+	import flash.external.ExternalInterface;
+	import flash.net.NetStream;
+	
+	
+	
+	public class StreamPublishCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+
+		
+		public function execute(event:CairngormEvent):void
+		{
+			try
+			{
+			if(!modelLocator.isConnected) throw new Error("Not connected!");
+			if(modelLocator.broadcastDownStream == null)modelLocator.broadcastDownStream = new NetStream(modelLocator.broadcastConnection);
+			if(modelLocator.broadcastDownStream.hasEventListener(NetStatusEvent.NET_STATUS))modelLocator.broadcastDownStream.addEventListener(NetStatusEvent.NET_STATUS, onStatus);
+			
+			// check for camera permission
+			if(modelLocator.allowAudio)modelLocator.broadcastDownStream.attachAudio(modelLocator.mic);
+			else modelLocator.broadcastDownStream.attachAudio(null);
+			
+			// check for mic permisson
+			if(modelLocator.allowVideo)	modelLocator.broadcastDownStream.attachCamera(modelLocator.camera);
+			else modelLocator.broadcastDownStream.attachCamera(null);
+			
+			if(!modelLocator.broadcastDownStream.hasEventListener(NetStatusEvent.NET_STATUS))
+			modelLocator.broadcastDownStream.addEventListener(NetStatusEvent.NET_STATUS,onStatus);
+			
+			modelLocator.broadcastDownStream.publish(getPublishSafeString(modelLocator.publishName),modelLocator.broadcastMode);
+			}
+			catch(e:Error)
+			{
+				mx.controls.Alert.show(e.message);
+			}
+			
+		}
+		
+		// TO DO
+		
+		private function getPublishSafeString(stream:String):String
+		{
+			var publishName:String;
+			var extensionIndex:Number = stream.lastIndexOf('.');
+			var extensionless:String = stream.substr( 0, extensionIndex ); 
+			var extension:String = stream.substr(extensionIndex+1,stream.length-1);
+			
+			if(extensionIndex == -1) return stream;
+			
+			switch(extension)
+			{
+				case 'mp4':
+					publishName = "mp4:"+extensionless+".mp4";
+					break;
+				case 'mp3':
+					publishName = "mp3:"+extensionless;
+					break;
+				case 'id3':
+					publishName = "id3:"+extensionless;
+					break;
+				case 'f4v':
+					publishName = "mp4:"+extensionless+".f4v";
+					break;
+				case '':
+					publishName = stream;
+					break;
+				case 'flv':
+					publishName = extensionless;
+					break;
+			}
+			
+			return publishName;
+		}
+		
+		
+		/* Event Handler */
+		
+		private function onStatus(ne:NetStatusEvent):void
+		{
+			modelLocator.logger.writeLog(ne.info.code);
+			
+			switch(ne.info.code)
+			{
+				case "NetStream.Publish.Start":
+					CairngormEventDispatcher.getInstance().dispatchEvent(new StreamEvent(StreamEvent.STREAM_SUCCESS));
+					break;
+				
+				case "NetStream.Failed":
+				case "NetStream.Record.Failed":
+				case "NetStream.Record.NoAccess":
+				case "NetStream.Publish.BadName":
+					CairngormEventDispatcher.getInstance().dispatchEvent(new StreamEvent(StreamEvent.STREAM_FAILURE));
+					break;
+					
+				case "NetStream.Record.Stop":
+					CairngormEventDispatcher.getInstance().dispatchEvent(new StreamEvent(StreamEvent.STREAM_END));
+					break;	
+			}
+		}
+	}
+}

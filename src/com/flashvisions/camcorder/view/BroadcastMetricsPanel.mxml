@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	
+	<s:HGroup>	
+		<s:HGroup>
+			<s:Label text="Selected Bandwidth" fontSize="10" width="100"/>
+			<s:Label fontSize="10" width="80" text="{modelLocator.curr_bandwidth} Kbps"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="Camera Width" fontSize="10" width="100"/>
+			<s:Label fontSize="10" width="80" text="{modelLocator.curr_camerawidth} PX"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="Camera Height" fontSize="10" width="100"/>
+			<s:Label fontSize="10" width="80" text="{modelLocator.curr_cameraheight} PX"/>
+		</s:HGroup>
+		
+	</s:HGroup>
+	<s:HGroup>	
+		<s:HGroup>
+			<s:Label text="Camera Fps" fontSize="10" width="100"/>
+			<s:Label fontSize="10" width="80" text="{modelLocator.cameraFPS}"/>
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="Quality" fontSize="10" width="100"/>
+			<s:Label fontSize="10" width="80" text="{modelLocator.curr_quality}" />
+		</s:HGroup>
+		<s:HGroup>
+			<s:Label text="CurrentFPS" fontSize="10" width="100"/>
+			<s:Label fontSize="10" width="80" text="{modelLocator.curr_framerate}"/>
+		</s:HGroup>
+	</s:HGroup>
+	
+</s:Group>

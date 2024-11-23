@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas addedEffect="Fade" creationComplete="canvas1_creationCompleteHandler(event)" filters="{[shadow]}" xmlns:mx="http://www.adobe.com/2006/mxml" width="431" height="202">
+	<mx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import com.flashvisions.commercial.flex.LicenceManager;
+			import com.flashvisions.commercial.flex.LicenceType;
+			
+			import mx.binding.utils.ChangeWatcher;
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.utils.URLUtil;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			[Bindable]
+			private var domain:String;
+			
+			[Bindable]
+			private var status:String = "Initializing"; 
+			
+			protected function canvas1_creationCompleteHandler(event:FlexEvent):void
+			{
+				ChangeWatcher.watch(modelLocator,"appmode",onModeChange);
+			}
+			
+			protected function onModeChange(e:Event):void
+			{
+				domain = URLUtil.getServerName(FlexGlobals.topLevelApplication.loaderInfo.url);
+				status = (modelLocator.appmode == LicenceType.TRIAL)?'Trial mode':'Registered to : '+domain
+			}
+
+		]]>
+	</mx:Script>
+		<mx:DropShadowFilter id="shadow" distance="7" blurX="8" blurY="8"/>	
+		<mx:Image width="100%" height="100%" source="@Embed(source='assets/splashscreen.jpg')"/>
+		<mx:Text fontWeight="bold" color="0x990000" text="{status}" y="120" height="42" right="20" left="20"/>
+</mx:Canvas>
+

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="init()" resize="{resizeScreen()}" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import flash.utils.setTimeout;
+			import mx.events.ResizeEvent;
+			
+			private var camera:Camera;
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			private function init():void
+			{
+				modelLocator.video = new Video(this.width,this.height);
+				modelLocator.video.smoothing = true;
+				uiComp.addChild(modelLocator.video);
+			}
+			
+			private function initVideoScreen():void
+			{
+				modelLocator.video.clear();
+				modelLocator.video.width = this.width;
+				modelLocator.video.height = this.height;
+				modelLocator.video.attachCamera(this.camera);
+			}
+			
+			private function resizeScreen():void
+			{
+				if(modelLocator.video)
+					initVideoScreen();
+			}
+			
+			
+			[Bindable]
+			public function get Cam():Camera
+			{
+				return this.camera;
+			}
+			
+			public function set Cam(cam:Camera):void
+			{
+				this.camera = cam;
+				initVideoScreen();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout />
+	</s:layout>
+	
+	<s:SpriteVisualElement width="100%" height="100%" id="uiComp" />
+	
+</s:Group>

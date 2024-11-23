@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:ns2="*" xmlns:view="com.flashvisions.camcorder.view.*" width="100%" height="100%" xmlns:liveness="com.flashvisions.camcorder.view.liveness.*" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.adobe.webapis.flickr.License;
+			import com.flashvisions.camcorder.OperationMode;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.MicrophoneEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import com.flashvisions.commercial.flex.LicenceType;
+			
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			[Embed(source="./assets/rtmp_world_logo.png")]
+			[Bindable]
+			public var defaultlogo:Class;
+			
+			private function init():void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.STARTUP));
+			}
+			
+			protected function cbxAutoSense_changeHandler(event:Event):void
+			{
+				/*
+				if(!modelLocator.autosense)
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.ACTIVATEAUTOSENSE));
+				else
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.DEACTIVATEAUTOSENSE));
+				*/
+			}
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.SHOWECHOCONTROL));
+			}
+			
+			
+			protected function button4_clickHandler(event:MouseEvent):void
+			{
+				modelLocator.wasPublishing = false;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+			}
+			
+			
+			protected function button3_clickHandler(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTART));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout />
+	</s:layout>
+	
+	
+	<s:VGroup id="CoreContainer" bottom="5" left="5" right="5" top="8">
+		<s:VGroup horizontalAlign="center" verticalAlign="middle" width="100%">
+			
+			<s:HGroup width="100%">				
+				
+				<s:HGroup width="50%" horizontalAlign="center">
+					<view:PresetPanel width="70%" />
+				</s:HGroup>
+				
+				<s:Spacer width="10"/>
+				
+				<s:HGroup width="50%" horizontalAlign="center">
+					<view:PreviewControl />
+					<s:Button width="20" height="20" click="button1_clickHandler(event)"
+							  fontWeight="normal" skinClass="com.flashvisions.skins.MicrophoneOptions" buttonMode="true" enabled="{modelLocator.isConnected &amp;&amp; modelLocator.allowAudio}"/>
+				</s:HGroup>
+			</s:HGroup>
+			
+			<s:HGroup gap="30" width="100%" height="100%" horizontalAlign="center" paddingBottom="5"
+					  paddingLeft="5" paddingRight="5" paddingTop="5">
+				<view:CameraView width="480" height="270"/>
+				<!--<s:Spacer width="100"/>-->
+				<view:PlaybackView width="480" height="270"/>
+			</s:HGroup>
+		</s:VGroup>
+		
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke color="#cccccc" weight="1" />
+			</s:stroke>
+		</s:Line>
+		
+		<s:HGroup width="100%" verticalAlign="middle">
+			<s:Spacer width="100%" />
+		</s:HGroup>
+		
+		<liveness:Panels id="encodingpanels" width="100%" />
+		
+		<s:Line width="100%">
+			<s:stroke>
+				<s:SolidColorStroke color="#cccccc" weight="1" />
+			</s:stroke>
+		</s:Line>
+		
+		
+		<s:HGroup width="100%" verticalAlign="middle" horizontalAlign="center">
+			
+			<s:HGroup width="100%" horizontalAlign="center" verticalAlign="middle" gap="10">
+				
+				<s:Button label="Start" click="button3_clickHandler(event)" height="35" enabled="{(modelLocator.isConnected) &amp;&amp; (!modelLocator.isBroadcasting) &amp;&amp; ( (modelLocator.allowVideo &amp;&amp; modelLocator.mode == OperationMode.VIDEO) || (modelLocator.allowAudio &amp;&amp; modelLocator.mode == OperationMode.AUDIO) || ((modelLocator.allowVideo &amp;&amp; modelLocator.allowAudio) &amp;&amp; modelLocator.mode == OperationMode.DUPLEX)  || ((modelLocator.allowAudio || modelLocator.allowVideo) &amp;&amp; modelLocator.mode == null))}" width="200"/>
+				<s:Button label="Stop" click="button4_clickHandler(event)" height="35" enabled="{modelLocator.isBroadcasting}" width="200"/>
+				<!--<s:Spacer width="100%" />
+				<s:ToggleButton id="tglAllowAudio" enabled="{!modelLocator.disableInteraction}" visible="{(modelLocator.mic != null)}" selected="{modelLocator.allowAudio}" height="35" width="80" label="Audio {(modelLocator.allowAudio)?'ON':'OFF'}" click="tglAllowAudio_clickHandler(event)"/>-->	
+			</s:HGroup>
+			
+		</s:HGroup>
+		
+	</s:VGroup>
+	
+</s:Module>

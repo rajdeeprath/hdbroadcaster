@@ -1,0 +1,37 @@
+package com.flashvisions.camcorder.event
+{
+	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import flash.events.Event;
+	
+	public class BroadcastEvent extends CairngormEvent
+	{
+		public static const STARTDURATIONMONITOR:String = "STARTDURATIONMONITOR";
+		public static const STOPDURATIONMONITOR:String = "STOPDURATIONMONITOR";
+		public static const START:String = "BROADCASTBEGIN";
+		public static const STOP:String = "BROADCASTEND";
+		public static const FAILED:String = "BROADCASTERROR";
+		public static const SAVE:String = "SESSIONSAVE";
+		public static const SAVESUCCESS:String = "SESSIONSAVESUCCESS";
+		public static const SAVEFAILED:String = "SESSIONSAVEFAILED";
+		public static const STARTMONITOR:String = "STARTBROADCASTMONITOR";
+		public static const STOPMONITOR:String = "STOPBROADCASTMONITOR";
+		public static const APPLYPRESET:String = "APPLYPRESET";
+		public static const CREATEBROADCASTGROUP:String = "CREATEBROADCASTGROUP";
+		
+		private var eventType:String;
+		public var params:Array;
+		
+		public function BroadcastEvent(type:String,...rest)
+		{
+			eventType = type;
+			params = rest;
+			super(eventType);
+		}
+		
+		override public function clone():Event
+		{
+			return new BroadcastEvent(eventType,params);
+		}
+	}
+}

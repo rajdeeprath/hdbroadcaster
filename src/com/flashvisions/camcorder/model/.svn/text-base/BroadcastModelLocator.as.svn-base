@@ -1,0 +1,196 @@
+package com.flashvisions.camcorder.model
+{
+	import com.adobe.cairngorm.CairngormError;
+	import com.adobe.cairngorm.model.IModelLocator;
+	import com.flashvisions.AirUtils.Logger;
+	import com.flashvisions.camcorder.Bitrate;
+	import com.flashvisions.camcorder.BroadcastQuality;
+	import com.flashvisions.camcorder.CamcorderMode;
+	import com.flashvisions.camcorder.CameraQuality;
+	import com.flashvisions.camcorder.FrameRate;
+	import com.flashvisions.camcorder.MicrophoneAudioRate;
+	import com.flashvisions.camcorder.clients.ConnectionClient;
+	import com.flashvisions.camcorder.clients.NotificationClient;
+	import com.flashvisions.camcorder.clients.StreamClient;
+	import com.flashvisions.remoting.RemotingConnection;
+	
+	import flash.display.BitmapData;
+	import flash.display.DisplayObject;
+	import flash.media.Camera;
+	import flash.media.Microphone;
+	import flash.media.SoundCodec;
+	import flash.media.Video;
+	import flash.net.GroupSpecifier;
+	import flash.net.NetConnection;
+	import flash.net.NetGroup;
+	import flash.net.NetStream;
+	import flash.net.SharedObject;
+	import flash.utils.Timer;
+	
+	import mx.collections.ArrayCollection;
+	import mx.core.IFlexDisplayObject;
+	import mx.graphics.ImageSnapshot;
+	import mx.graphics.codec.JPEGEncoder;
+	
+	[Bindable]
+	public class BroadcastModelLocator implements IModelLocator
+	{
+		public static const APPLICATIONID:String = "FXBroadcaster";
+		public static const BROADCASTMODE:String = "live";
+		public static const ENCODERSCREEN:String = "EncoderScreen";
+		
+		public static const PREINIT:String = "PreInit";
+		public static const READY:String = "Ready";
+		
+		public var currentState:String; 
+		public var splash:IFlexDisplayObject;
+		public var validatorRSL:Object = null;
+		
+		public var autoSnapInterval:Number;
+		public var connectionMonitor:Timer = new Timer(5000);
+		public var wasConnected:Boolean = false;
+		public var wasPublishing:Boolean = false;
+		public var licence:String; 
+		public var appmode:String = null;
+		public var aspect:String;
+		public var mode:String = null;
+		public var operationMode:String = CamcorderMode.RECORDING;
+		public var configuration:Object; 
+		public var gateway:RemotingConnection;
+		public var currentDomain:String;
+		public var destination:String;
+		public var logger:Logger = new Logger();
+		public var micfeedback:Boolean; 
+		public var groupname:String;
+		public var groupspec:GroupSpecifier;
+		public var broadcastGroup:NetGroup;
+		public var protocol:String; 
+		public var debugMode:Boolean;
+		/********* CAMERA SETTINGS *********/
+		
+		public var camera:Camera;
+		public var cameraIndex:int = 0;
+		public var cameras:ArrayCollection = new ArrayCollection();;
+		public var localCamera:Camera;
+		public var cameraBandWidth:int;
+		public var cameraWidth:int;
+		public var cameraHeight:int;
+		public var cameraKeyframe:int;
+		public var cameraFPS:int;
+		public var videoQuality:Number = 85;
+		
+		public var snapshot:BitmapData; 
+		public var imageEncoder:JPEGEncoder = new JPEGEncoder(60);
+		public var previewURL:String;
+		
+		/********  Microphone Settings  *****/
+		public var mic:Microphone;
+		
+		public var micIndex:int = 0;
+		public var microphones:ArrayCollection = new ArrayCollection();;
+		public var micRate:int;
+		public var micGain:Number = 70;
+		public var micActiivity:Number;
+		public var audioQuality:Number;
+		public var micMonitor:Timer;
+		
+		/******** Bandwidth Check Settings *****/
+		public var serverType:String; 
+		public var detectedBandWidth:Number = 0;
+		public var bwCheck:String;
+		public var bitrate:String;
+		
+		/******** Connection Settings *****/
+		public var broadcastConnection:NetConnection;
+		public var broadcastDownStream:NetStream;
+		public var broadcastMode:String;
+		public var publishName:String;
+		public var publishType:String = "flv";
+		
+		/********  Others  ***************/
+		public var logo:String;
+		public var video:Video = new Video(300,225);
+		public var videoURL:String; 
+		public var allowVideo:Boolean = false;
+		public var allowAudio:Boolean = false;
+		public var disableVideo:Boolean = false;
+		public var disableAudio:Boolean = false;
+		
+		public var isBroadcasting:Boolean;
+		public var isConnected:Boolean;
+		
+		public var durationMonitor:Timer;
+		public var maxRecordDuration:Number = 0; 
+		
+		public var connClient:ConnectionClient;
+		public var upStreamClient:StreamClient;
+		public var downStreamClient:StreamClient;
+		public var notificationClient:NotificationClient;
+		
+		
+		public var broadcastQuality:ArrayCollection = new ArrayCollection([
+			
+			{label:BroadcastQuality.BROADCAST_MAX,resolution:CameraQuality.STANDARDMAX,width:640,height:480,fps:18,keyframe:60,bandwidth:735200,quality:90,micrate:44},
+			
+			{label:BroadcastQuality.TV_BEST,resolution:CameraQuality.STANDARDHIGH,width:480,height:360,fps:18,keyframe:60,bandwidth:432800,quality:90,micrate:44},
+			{label:BroadcastQuality.TV_HIGH,resolution:CameraQuality.STANDARDGOOD,width:400,height:300,fps:18,keyframe:60,bandwidth:314000,quality:90,micrate:44},
+			{label:BroadcastQuality.TV_GOOD,resolution:CameraQuality.STANDARD,width:320,height:240,fps:18,keyframe:60,bandwidth:194800,quality:90,micrate:22},
+			{label:BroadcastQuality.TV_AVERAGE,resolution:CameraQuality.WEBBEST,width:300,height:225,fps:18,keyframe:48,bandwidth:173875,quality:89,micrate:22},
+			
+			{label:BroadcastQuality.BEST,resolution:CameraQuality.WEBBEST,width:300,height:225,fps:15,keyframe:60,bandwidth:144000,quality:90,micrate:44},
+			{label:BroadcastQuality.HIGH,resolution:CameraQuality.WEBHIGH,width:220,height:165,fps:15,keyframe:60,bandwidth:64800,quality:90,micrate:22},
+			{label:BroadcastQuality.GOOD,resolution:CameraQuality.WEBGOOD,width:165,height:124,fps:14,keyframe:48,bandwidth:36000,quality:88,micrate:22},
+			{label:BroadcastQuality.AVERAGE,resolution:CameraQuality.WEBAVERAGE,width:145,height:109,fps:12,keyframe:36,bandwidth:26000,quality:86,micrate:11},
+			{label:BroadcastQuality.LOW,resolution:CameraQuality.WEBLOW,width:80,height:60,fps:9,keyframe:24,bandwidth:5200,quality:85,micrate:8}]);
+		
+		
+		public var resolution:ArrayCollection = new ArrayCollection([
+			{label:CameraQuality.STANDARDMAX,width:640,height:480},
+			{label:CameraQuality.STANDARDBEST,width:560,height:420},
+			{label:CameraQuality.STANDARDHIGH,width:480,height:360},
+			{label:CameraQuality.STANDARDGOOD,width:400,height:300},
+			{label:CameraQuality.STANDARD,width:320,height:240},
+			{label:CameraQuality.WEBBEST,width:300,height:225},
+			{label:CameraQuality.WEBHIGH,width:220,height:165},
+			{label:CameraQuality.WEBGOOD,width:165,height:124},
+			{label:CameraQuality.WEBAVERAGE,width:145,height:109},
+			{label:CameraQuality.WEBLOW,width:80,height:60}]); 
+		
+		public var fps:ArrayCollection = new ArrayCollection([{label:FrameRate.NTSC,fps:29},{label:FrameRate.PAL,fps:25},{label:FrameRate.WEB_BEST,fps:20},{label:FrameRate.WEB_GOOD,fps:18},{label:FrameRate.WEB_AVERAGE,fps:15},{label:FrameRate.WEB_LOW,fps:14},{label:FrameRate.WEB_SAFE,fps:12},{label:FrameRate.DIALUP,fps:9}]); 
+		public var micRates:ArrayCollection = new ArrayCollection([{label:MicrophoneAudioRate.BEST,rate:44},{label:MicrophoneAudioRate.HIGH,rate:22},{label:MicrophoneAudioRate.GOOD,rate:11},{label:MicrophoneAudioRate.LOW,rate:8}]);
+		public var bitrates:ArrayCollection = new ArrayCollection([{label:Bitrate.DIALUP,kbps:56},{label:Bitrate.DSL,kbps:100},{label:Bitrate.BROADBAND,kbps:256},{label:Bitrate.MEDIUMBROADBAND,kbps:384},{label:Bitrate.HIGHSPEEDBROADBAND,kbps:768},{label:Bitrate.SUPERFASTBROADBAND,kbps:1500}]);
+		
+		public var selecedResolutionIndex:Number = 0;
+		public var selectedFpsIndex:Number = 0;
+		public var selectedMicRatesIndex:Number = 0;
+		
+		public var audioFormats:ArrayCollection = new ArrayCollection([SoundCodec.NELLYMOSER,SoundCodec.SPEEX]);
+		
+		public var audioCodec:String = SoundCodec.NELLYMOSER;
+		public var encodeQuality:int = 6;
+		
+		public var presetIndex:int = 0;
+		public var buffer:Number = 0; 
+		public var liverecord:Boolean = false;
+		
+		public var previewAudio:Boolean = false;
+		public var previewVideo:Boolean = false;
+		
+		public var gatewayURL:String; 
+
+		private static var instance:BroadcastModelLocator;
+		
+		
+		public function BroadcastModelLocator(enforcer:SingletonEnforcer = null)
+		{
+			if(enforcer == null)
+			throw new CairngormError("Use getInstance to access this class !");
+		}
+		
+		public static function getInstance():BroadcastModelLocator
+		{
+			if(instance == null) instance = new BroadcastModelLocator(new SingletonEnforcer());
+			return instance;
+		}
+	}
+}

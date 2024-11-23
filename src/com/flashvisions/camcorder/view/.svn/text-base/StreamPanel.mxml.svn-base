@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox height="100%" paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="10">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.ConnectionEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(!modelLocator.isConnected)CairngormEventDispatcher.getInstance().dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECT,modelLocator.destination));
+				else{
+					modelLocator.wasConnected = false;
+					modelLocator.wasPublishing = false;
+					CairngormEventDispatcher.getInstance().dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECT));
+				} 
+			}
+
+			protected function textinput1_changeHandler(event:Event):void
+			{
+				modelLocator.destination = txtDestination.text;
+			}
+
+
+			protected function txtStreamName_changeHandler(event:Event):void
+			{
+				modelLocator.publishName = txtStreamName.text;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label text="Connection Url"/>
+	<mx:TextInput restrict=": a-z A-Z 0-9 / = _ . \-" displayAsPassword="{!modelLocator.allowDestinationChange}" enabled="{modelLocator.allowDestinationChange &amp;&amp; !modelLocator.isConnected}" id="txtDestination" width="195" change="textinput1_changeHandler(event)" text="{modelLocator.destination}"/>
+	<mx:Label text="Stream Name"/>
+	<mx:TextInput restrict="a-z A-Z 0-9 _ . \-" displayAsPassword="{!modelLocator.allowPublishNameChange}" enabled="{modelLocator.allowPublishNameChange &amp;&amp; !modelLocator.isBroadcasting}" id="txtStreamName" change="txtStreamName_changeHandler(event)" width="195" text="{modelLocator.publishName}"/>
+	<mx:Spacer height="5%"/>
+	<mx:HBox horizontalAlign="left">
+		<mx:Button label="{(!modelLocator.isConnected)?'Connect':'Disconnect'}" click="button1_clickHandler(event)" height="30" cornerRadius="0" width="195"/>
+	</mx:HBox>
+	
+</mx:VBox>

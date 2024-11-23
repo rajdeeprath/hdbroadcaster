@@ -1,0 +1,46 @@
+package com.flashvisions.camcorder.event
+{
+	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import flash.events.Event;
+	
+	import org.flowplayer.util.Arrange;
+
+	public class ApplicationEvent extends CairngormEvent
+	{
+		public static const BANDWIDTHCHECK:String = "BANDWIDTHCHECK";
+		public static const BANDWIDTHDETECTED:String = "BANDWIDTHDETECTED";
+		public static const STARTUP:String = "APPLICATIONSTARTUP";
+		public static const SHUTDOWN:String = "APPLICATIONSHUTDOWN";
+		public static const CONFIGURATION_LOAD:String = "CONFIGURATIONLOAD";
+		public static const CONFIGURATION_FAILED:String = "CONFIGURATIONFAILED";
+		public static const CONFIGURATION_SUCCESS:String = "CONFIGURATIONLOADED";
+		public static const SKINLOADED:String = "SKINLOADED";
+		public static const SKINERROR:String = "SKINERROR";
+		public static const SKIN:String = "LOADSKIN";
+		public static const READY:String = "onBroadcasterReady";
+		public static const FAILED:String = "APPLICATIONERROR";
+		public static const GETBITRATE:String = "GETBITRATE";
+		
+		public static const CREATESPLASHSCREEN:String = "CREATESPLASHSCREEN";
+		public static const REMOVESPLASHSCREEN:String = "REMOVESPLASHSCREEN";
+		
+		
+		
+		private var eventType:String;
+		public var params:Array;
+		
+		public function ApplicationEvent(type:String,...params)
+		{
+			this.eventType = type;
+			this.params = params;
+			
+			super(eventType);
+		}
+		
+		override public function clone():Event
+		{
+			return new ApplicationEvent(eventType,params);
+		} 
+	}
+}

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:ns1="com.flashvisions.camcorder.view.*"
+		  width="100%" height="100%" creationComplete="module1_creationCompleteHandler(event)" >
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import mx.events.FlexEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			protected function module1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// Acquire devices 
+				if(!modelLocator.disableVideo && !modelLocator.asViewer && modelLocator.isConnected)
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.CAMERA_ACQUIRE));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout />
+	</s:layout>
+	
+	<ns1:VideoCamView width="100%" height="100%" Cam="{modelLocator.localCamera}"  id="videocamview1" />
+	
+</s:Module>

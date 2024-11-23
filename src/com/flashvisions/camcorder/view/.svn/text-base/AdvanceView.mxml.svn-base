@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox paddingRight="5" paddingBottom="5" paddingLeft="5" paddingTop="5" xmlns:mx="http://www.adobe.com/2006/mxml">
+
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+
+			protected function nstpCameraFPS_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				
+				modelLocator.cameraFPS = nstpCameraFPS.value;
+				
+				modelLocator.logger.writeLog("Camera FPS Changed - "+ modelLocator.cameraFPS);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+
+
+			protected function numericstepper1_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				
+				modelLocator.cameraKeyframe = nstpCameraKeyframe.value;
+				
+				modelLocator.logger.writeLog("Camera Keyframe Changed - "+ modelLocator.cameraKeyframe);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+
+		]]>
+	</mx:Script>
+	
+	<mx:VBox >
+	<mx:HBox verticalAlign="middle"  horizontalGap="8" height="25">
+		<mx:Label text="Camera FPS" fontSize="14" width="150" fontWeight="normal"/>
+		<mx:NumericStepper enabled="{(modelLocator.camera != null)?true:false}" id="nstpCameraFPS" change="nstpCameraFPS_changeHandler(event)" maximum="25" minimum="0"  value="{modelLocator.cameraFPS}" width="60"/>
+	</mx:HBox>
+	<mx:HBox verticalAlign="middle" horizontalGap="8" height="25" paddingRight="0" paddingLeft="0">
+		<mx:Label text="KeyFrameInterval" fontSize="14" width="150" fontWeight="normal"/>
+		<mx:NumericStepper id="nstpCameraKeyframe" enabled="{(modelLocator.camera != null)?true:false}" minimum="1" maximum="48" value="{modelLocator.cameraKeyframe}" change="numericstepper1_changeHandler(event)" width="60"/>
+	</mx:HBox>
+	</mx:VBox>	
+	
+	<mx:VBox >
+		<mx:HBox fontStyle="normal" verticalAlign="middle" height="25">
+			<mx:Label text="Microphone Settings" width="150" fontSize="14"/>
+			<mx:Button label="Show Settings" click="{Security.showSettings(SecurityPanel.MICROPHONE)}"/>
+		</mx:HBox>
+		<mx:HBox fontStyle="normal" verticalAlign="middle" height="25">
+			<mx:Label text="Camera Settings" width="150" fontSize="14"/>
+			<mx:Button label="Show Settings" click="{{Security.showSettings(SecurityPanel.CAMERA)}}"/>
+		</mx:HBox>
+	</mx:VBox>	
+</mx:HBox>

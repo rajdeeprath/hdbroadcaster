@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark"
+		  xmlns:ns2="*" xmlns:view="com.flashvisions.camcorder.view.*" width="100%" height="100%" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.adobe.webapis.flickr.License;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import com.flashvisions.commercial.flex.LicenceType;
+			
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			[Embed(source="./assets/rtmp_world_logo.png")]
+			[Bindable]
+			public var defaultlogo:Class;
+			
+			private function init():void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.STARTUP));
+			}
+			
+			protected function cbxAutoSense_changeHandler(event:Event):void
+			{
+				/*
+				if(!modelLocator.autosense)
+					CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.ACTIVATEAUTOSENSE));
+				else
+					CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.DEACTIVATEAUTOSENSE));
+				*/
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout />
+	</s:layout>
+	
+	
+		<s:VGroup id="CoreContainer" bottom="5" left="5" right="5" top="8">
+			<s:VGroup horizontalAlign="center" verticalAlign="middle" width="100%">
+				<s:HGroup gap="30" width="100%" height="100%" horizontalAlign="center" paddingBottom="5"
+						  paddingLeft="5" paddingRight="5" paddingTop="5">
+					<view:CameraView />
+					<!--<s:Spacer width="100"/>-->
+					<view:PlaybackView />
+				</s:HGroup>
+			</s:VGroup>
+			
+			<s:Line width="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="#cccccc" weight="1" />
+				</s:stroke>
+			</s:Line>
+			
+			<s:HGroup width="100%" verticalAlign="middle">
+				<s:Spacer width="100%" />
+			</s:HGroup>
+			
+			<view:Panels id="encodingpanels" width="100%" />
+			
+			<s:Line width="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="#cccccc" weight="1" />
+				</s:stroke>
+			</s:Line>
+			
+			
+			<s:HGroup width="100%" verticalAlign="middle">
+				<!--<s:Image id="logo" source="{(modelLocator.appmode == LicenceType.REGISTERED)?modelLocator.logo:defaultlogo}" visible="true" />-->
+				<s:Image id="logo" source="{modelLocator.logo}" visible="true" />
+				<s:Spacer width="100%"/>
+				<view:ControlbarView/>
+			</s:HGroup>
+			
+		</s:VGroup>
+	
+</s:Module>

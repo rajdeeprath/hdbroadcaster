@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" currentState="{modelLocator.currentState}" frameRate="12" applicationComplete="init()" xmlns:controller="com.flashvisions.camcorder.control.*" xmlns:ns1="com.flashvisions.camcorder.view.*" 
+			   xmlns:ns2="*" xmlns:business="com.flashvisions.camcorder.business.*" width="100%" height="100%" xmlns:modules="modules.*">
+	
+	<fx:Declarations>
+		<controller:CamcorderController id="controller" />
+		<business:Services id="services" />
+		
+		<s:TraceTarget id="logTarget" 
+						includeDate="true" 
+						includeTime="true" 
+						includeCategory="true" 
+						includeLevel="true">
+			<s:filters>
+				<fx:Array>
+					<fx:String>mx.rpc.*</fx:String>
+					<fx:String>mx.messaging.*</fx:String>
+				</fx:Array>
+			</s:filters>
+			<!-- 0 is represents the LogEventLevel.ALL constant. -->
+			<s:level>0</s:level>
+		</s:TraceTarget>
+		
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import com.flashvisions.components.Alert;
+			
+			import mx.core.FlexGlobals;
+			import mx.events.FlexEvent;
+			import mx.logging.Log;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			private function init():void
+			{
+				Log.addTarget(logTarget);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.STARTUP));
+			}
+			
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:states>
+		<s:State name="PreInit" />
+		<s:State name="Ready" />
+	</s:states>
+	
+	<s:SWFLoader source="@Embed(source='assets/progress.swf')"  horizontalCenter="0" verticalCenter="0" includeIn="PreInit"/>
+	<ns1:CoreLayout includeIn="Ready" width="100%" height="100%" horizontalCenter="0"
+					verticalCenter="0"/>
+	
+</s:Application>

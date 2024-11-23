@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.OperationMode;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance(); 
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTART));
+			}
+			
+			
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				modelLocator.wasPublishing = false;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+			}
+			
+			
+			
+			protected function tglAllowAudio_clickHandler(event:MouseEvent):void
+			{
+				if(modelLocator.allowAudio)
+				{
+					CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.DISABLEAUDIOBROADCAST));
+				}
+				else
+				{
+					CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.ENABLEAUDIOBROADCAST));
+				}
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout />
+	</s:layout>
+	
+	
+	<s:Button label="Start" click="button1_clickHandler(event)" height="35" enabled="{(modelLocator.isConnected) &amp;&amp; (!modelLocator.isBroadcasting) &amp;&amp; ( (modelLocator.allowVideo &amp;&amp; modelLocator.mode == OperationMode.VIDEO) || (modelLocator.allowAudio &amp;&amp; modelLocator.mode == OperationMode.AUDIO) || ((modelLocator.allowVideo &amp;&amp; modelLocator.allowAudio) &amp;&amp; modelLocator.mode == OperationMode.DUPLEX)  || ((modelLocator.allowAudio || modelLocator.allowVideo) &amp;&amp; modelLocator.mode == null))}" width="150"/>
+	<s:Button label="Stop" click="button2_clickHandler(event)" height="35" enabled="{modelLocator.isBroadcasting}" width="150"/>
+	<!--<s:Spacer width="100%" />
+	<s:ToggleButton id="tglAllowAudio" enabled="{!modelLocator.disableInteraction}" visible="{(modelLocator.mic != null)}" selected="{modelLocator.allowAudio}" height="35" width="80" label="Audio {(modelLocator.allowAudio)?'ON':'OFF'}" click="tglAllowAudio_clickHandler(event)"/>-->
+</s:Module>

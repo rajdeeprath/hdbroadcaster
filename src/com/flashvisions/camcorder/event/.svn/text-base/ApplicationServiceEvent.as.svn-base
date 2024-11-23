@@ -1,0 +1,26 @@
+package com.flashvisions.camcorder.event
+{
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.flashvisions.camcorder.event.BroadcastEvent;
+	import com.flashvisions.camcorder.event.NotificationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	import flash.events.Event;
+	
+	public class ApplicationServiceEvent extends CairngormEvent
+	{
+		public static const LOAD_VIDEO_FEED:String = "LOADVIDEOS";
+		
+		private var eventType:String;
+		
+		public function ApplicationServiceEvent(type:String)
+		{
+			eventType = type;
+			super(eventType);
+		}
+		
+		override public function clone():Event
+		{
+			return new ApplicationServiceEvent(eventType);
+		}
+	}
+}

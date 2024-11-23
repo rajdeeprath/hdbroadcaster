@@ -1,0 +1,90 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.BroadcastQuality;
+	import com.flashvisions.camcorder.OperationMode;
+	import com.flashvisions.camcorder.clients.ConnectionClient;
+	import com.flashvisions.camcorder.clients.NotificationClient;
+	import com.flashvisions.camcorder.event.ApplicationEvent;
+	import com.flashvisions.camcorder.event.BroadcastEvent;
+	import com.flashvisions.camcorder.event.CameraEvent;
+	import com.flashvisions.camcorder.event.ConnectionEvent;
+	import com.flashvisions.camcorder.event.LicenceEvent;
+	import com.flashvisions.camcorder.event.MicrophoneEvent;
+	import com.flashvisions.camcorder.event.NotificationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	
+	import flash.external.ExternalInterface;
+	import flash.media.Camera;
+	import flash.media.Microphone;
+	import flash.net.NetConnection;
+	import flash.utils.Timer;
+	
+	import mx.collections.ArrayCollection;
+	import mx.core.FlexGlobals;
+	
+	public class ApplicationReadyCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		
+		public function execute(event:CairngormEvent):void
+		{
+			var licenceEvent:LicenceEvent = event as LicenceEvent;
+			
+			for(var i:int = 0;i < flash.media.Camera.names.length;i++)
+			modelLocator.cameras.addItem({label:flash.media.Camera.names[i],data:i});
+			
+			for(var j:int = 0;j < flash.media.Microphone.names.length;j++)
+			modelLocator.microphones.addItem({label:flash.media.Microphone.names[j],data:j});
+			
+			modelLocator.allowVideo = modelLocator.allowAudio = false;
+			modelLocator.isConnected = modelLocator.isBroadcasting = false;
+			
+			if(modelLocator.mode == OperationMode.AUDIO)modelLocator.disableVideo = true;
+			else if(modelLocator.mode == OperationMode.VIDEO)modelLocator.disableAudio = true;
+			else if(modelLocator.mode != OperationMode.DUPLEX)modelLocator.mode = null;
+			
+			modelLocator.connClient = new ConnectionClient();
+			modelLocator.broadcastConnection = new NetConnection();
+			modelLocator.broadcastConnection.client = modelLocator.connClient;
+			
+			modelLocator.micMonitor = new Timer(40);
+			modelLocator.durationMonitor = new Timer(1000,modelLocator.maxRecordDuration);
+			
+			modelLocator.notificationClient = new NotificationClient();
+			modelLocator.notificationClient.notifyGlobal(ApplicationEvent.READY);
+			
+			//Load default for bandwidth settings 
+			modelLocator.presetIndex = getPresetIndexByLabel(BroadcastQuality.AVERAGE,modelLocator.broadcastQuality);
+			CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.APPLYPRESET,modelLocator.broadcastQuality.getItemAt(modelLocator.presetIndex)));
+			
+			// Acquire devices 
+			if(!modelLocator.disableVideo)
+			CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.ACQUIRE));
+			
+			if(!modelLocator.disableAudio)
+			CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.ACQUIRE));
+			
+			if(modelLocator.destination != null)
+			CairngormEventDispatcher.getInstance().dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECT,modelLocator.destination));
+			
+			if(modelLocator.bwCheck != null)
+			CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.BANDWIDTHCHECK));
+			
+			FlexGlobals.topLevelApplication.enabled = true;
+		}
+		
+		/* Utility function */
+		
+		public function getPresetIndexByLabel(needle:String,haystack:ArrayCollection):Number
+		{
+			for(var i:int=0;i<haystack.length;i++)
+			if(haystack.getItemAt(i).label == needle) return i;
+			return -1;
+		}
+	}
+}

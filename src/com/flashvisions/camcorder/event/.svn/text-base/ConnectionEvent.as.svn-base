@@ -1,0 +1,31 @@
+package com.flashvisions.camcorder.event
+{
+	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import flash.events.Event;
+	
+	public class ConnectionEvent extends CairngormEvent
+	{
+		public static const ATTEMPTRECONNECT:String = "ATTEMPTRECONNECT";
+		public static const CONNECT:String = "CONNECT";
+		public static const DISCONNECT:String = "DISCONNECT";
+		public static const SUCCESS:String = "CONNECTSUCCESS";
+		public static const FAILURE:String = "CONNECTFAILED";
+		
+		private var eventType:String;
+		public var connectionURL:String;
+		
+		public function ConnectionEvent(type:String,url:String=null)
+		{
+			eventType = type;
+			connectionURL = url;
+			
+			super(eventType);
+		}
+		
+		override public function clone() : Event
+		{
+			return new ConnectionEvent(eventType,connectionURL);
+		}
+	}
+}

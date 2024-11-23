@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Module xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		  xmlns:s="library://ns.adobe.com/flex/spark" width="100%" currentState="{modelLocator.currentView}" xmlns:local="*">
+	<s:states>
+		<s:State name="CameraView"/>
+		<s:State name="PlaybackView"/>
+	</s:states>
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.MicrophoneEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import flash.events.Event;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.SHOWECHOCONTROL));
+			}
+			
+			protected function togglebutton1_clickHandler(event:MouseEvent):void
+			{
+				if(modelLocator.broadcastAudio)
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.DISABLEAUDIOBROADCAST));
+				else
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.ENABLEAUDIOBROADCAST));
+			}
+			
+			protected function togglebutton2_clickHandler(event:MouseEvent):void
+			{
+				if(modelLocator.broadcastVideo)
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.DISABLEVIDEOBROADCAST));
+				else
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.ENABLEVIDEOBROADCAST));
+			}
+			
+			protected function onSettingsClicked(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.SHOWECHOCONTROL)); 
+			}
+			
+			protected function onViewToggle(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.CHANGEVIEWMODE));
+			}
+			
+			
+			protected function hslider1_changeHandler(event:Event):void
+			{
+				var slider:HSlider = event.target as HSlider;
+				var volume:Number = slider.value/100;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.INITIALIZESPEAKERVOLUME,volume));
+			}
+			
+			protected function hslider2_changeHandler(event:Event):void
+			{
+				var slider:HSlider = event.target as HSlider;
+				modelLocator.micGain = slider.value;	
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_INITIALIZE));
+			}
+			
+			protected function togglebutton3_clickHandler(event:MouseEvent):void
+			{
+				var volume:Number = 0;
+				
+				if(modelLocator.speakerVolume > 0)
+				modelLocator.memoryVolume = modelLocator.speakerVolume;
+				else
+				volume = modelLocator.memoryVolume;
+				
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.INITIALIZESPEAKERVOLUME,volume));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:BasicLayout />
+	</s:layout>
+	
+	<s:Rect width="100%" height="100%">
+		<s:fill>
+			<s:SolidColor color="0xcccccc" alpha=".5" />
+		</s:fill>
+	</s:Rect>
+	
+	<s:VGroup width="100%" gap="2">
+	
+	<local:VolumeGauge width="100%" height="5" alpha="{(modelLocator.micActiivity&gt;=0)?1:-1}"  enabled="{modelLocator.micActiivity&gt;=0}" value="{modelLocator.micActiivity/100}"/>
+	
+	<s:HGroup paddingLeft="5" paddingRight="5" width="100%" horizontalAlign="right"  verticalAlign="middle" verticalCenter="0">
+		
+		<!--<s:ToggleButton skinClass="com.flashvisions.skins.ToggleViewOptions" buttonMode="true" click="onViewToggle(event)" selected="{modelLocator.currentView == BroadcastModelLocator.PLAYBACKVIEW}" />-->	
+		<s:Spacer width="100%" />
+		<s:ToggleButton id="cbxAudioPermit" skinClass="com.flashvisions.skins.MicrophoneToggleOptions" click="togglebutton1_clickHandler(event)" buttonMode="true" includeIn="CameraView" enabled="{modelLocator.allowAudio}" selected="{!modelLocator.broadcastAudio}"/>
+		<s:ToggleButton id="cbxVideoPermit" skinClass="com.flashvisions.skins.CameraOptions" click="togglebutton2_clickHandler(event)" buttonMode="true" includeIn="CameraView" enabled="{modelLocator.allowVideo}" selected="{!modelLocator.broadcastVideo}"/>
+		<s:ToggleButton skinClass="com.flashvisions.skins.SoundOptions" click="togglebutton3_clickHandler(event)" selected="{(modelLocator.speakerVolume==0)}" buttonMode="true"/>
+		<s:HSlider id="sldrMicVolume" width="40" includeIn="CameraView" minimum="0" maximum="100" value="{modelLocator.micGain}" change="hslider2_changeHandler(event)"/>
+		<s:HSlider id="sldrMainVolume" width="40" includeIn="PlaybackView" minimum="0" maximum="100" value="{modelLocator.speakerVolume * 100}" stepSize="1" change="hslider1_changeHandler(event)"/>
+		<s:Button skinClass="com.flashvisions.skins.SettingsOptions" click="onSettingsClicked(event)" buttonMode="true"/>
+	</s:HGroup>
+		
+	</s:VGroup>
+	
+</s:Module>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.Protocol;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.StreamEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			protected function cbxPreviewAudio_changeHandler(event:Event):void
+			{
+				
+				CairngormEventDispatcher.getInstance().dispatchEvent(new StreamEvent(StreamEvent.TOGGLESTREAMAUDIO, cbxPreviewAudio.selected));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout verticalAlign="middle" />
+	</s:layout>
+	
+	<s:CheckBox enabled="{modelLocator.protocol != Protocol.RTMFP &amp;&amp; !modelLocator.isBroadcasting}" label="Preview" id="cbxPreview" selected="{modelLocator.enablePreview}" change="{modelLocator.enablePreview =  cbxPreview.selected}"/>
+	<s:CheckBox enabled="{modelLocator.protocol != Protocol.RTMFP &amp;&amp; modelLocator.enablePreview}" id="cbxPreviewAudio" label="Audio" height="20" selected="{modelLocator.previewAudio &amp;&amp; modelLocator.enablePreview }" change="cbxPreviewAudio_changeHandler(event)"/>
+
+</s:Group>

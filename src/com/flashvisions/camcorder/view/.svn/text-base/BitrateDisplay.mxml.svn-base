@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" paddingLeft="5" paddingRight="5" width="100%" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import mx.events.Event;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			private var bps:Number;
+
+			protected function cmbBitrates_changeHandler(event:Event):void
+			{
+				if(cmbBitrates.text.length>4)cmbBitrates.text = cmbBitrates.text.substr(0,4);
+				
+				if(cmbBitrates.selectedIndex < 0)bps = Math.round((parseInt(cmbBitrates.text) * 1000)/8);
+				else bps = Math.round((cmbBitrates.selectedItem.kbps * 1000)/8);
+				
+				modelLocator.cameraBandWidth = bps;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Label text="Bitrate" width="70"/>
+	<mx:ComboBox id="cmbBitrates" change="cmbBitrates_changeHandler(event)" dataProvider="{modelLocator.bitrates}" textAlign="left" labelField="kbps" width="130" editable="true" restrict="0-9" text="{modelLocator.bitrate}"/>
+	<mx:Text text="Kbps"/>
+</mx:HBox>

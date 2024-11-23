@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			protected function onPresetChanged(event:Event):void
+			{
+				var index:int = modelLocator.presetIndex = cmbPresets.selectedIndex;
+				var settings:Object = modelLocator.broadcastQuality.getItemAt(index);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.APPLYPRESET,settings));
+			}
+		]]>
+	</mx:Script>
+	<mx:Label text="Presets" fontWeight="bold" fontFamily="Verdana"/>
+	<mx:ComboBox textAlign="left" id="cmbPresets" selectedIndex="{modelLocator.presetIndex}" dataProvider="{modelLocator.broadcastQuality}" width="280" change="onPresetChanged(event)" />
+</mx:HBox>

@@ -1,0 +1,34 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.event.ApplicationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	import com.flashvisions.remoting.RemotingConnection;
+	import flash.system.Security;
+	import mx.core.FlexGlobals;
+	import mx.utils.URLUtil;
+	
+	public class ApplicationStartUpCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		private var serviceLocation:String;
+		
+		
+		public function execute(event:CairngormEvent):void
+		{
+			FlexGlobals.topLevelApplication.enabled = false;
+			modelLocator.currentState = BroadcastModelLocator.PREINIT;
+			
+			serviceLocation = FlexGlobals.topLevelApplication.parameters.serviceLocation;
+			modelLocator.configuration = FlexGlobals.topLevelApplication.parameters;
+			modelLocator.currentDomain = URLUtil.getServerName(FlexGlobals.topLevelApplication.loaderInfo.url);
+			modelLocator.gatewayURL = (serviceLocation == null)?"http://"+modelLocator.currentDomain+"/amfphp/gateway.php":"http://"+modelLocator.currentDomain+"/"+serviceLocation+"/gateway.php"
+				
+			CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.SKIN));	
+			CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.CONFIGURATION_LOAD));
+		}		
+	}
+}

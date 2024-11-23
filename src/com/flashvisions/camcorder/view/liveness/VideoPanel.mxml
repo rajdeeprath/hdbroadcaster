@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here --> 
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import flash.events.Event;
+			
+			import mx.events.ItemClickEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			
+			protected function onCameraChanged(event:Event):void
+			{
+				modelLocator.cameraIndex = cmbCameras.selectedIndex;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.CAMERA_ACQUIRE));
+			}
+			
+			
+			protected function cmbFps_changeHandler(event:Event):void
+			{
+				if(cmbFps.selectedIndex < 0){
+					modelLocator.cameraFPS = parseInt(cmbFps.textInput.text);	
+				}
+				else{					
+					modelLocator.selectedFpsIndex = cmbFps.selectedIndex;
+					modelLocator.cameraFPS = cmbFps.selectedItem.fps;
+				} 
+				
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.CAMERA_INITIALIZE));
+			}
+			
+			
+			protected function onQualityChanged(e:Event):void
+			{
+				modelLocator.videoQuality = e.target.value;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.CAMERA_INITIALIZE));
+			}
+			
+			protected function cbxVideoPermit_changeHandler(event:Event):void
+			{
+				modelLocator.allowVideo = cbxVideoPermit.selected;
+				
+				if((modelLocator.isBroadcasting)&&(!modelLocator.allowVideo))
+					modelLocator.broadcastDownStream.attachCamera(null);
+				else if((modelLocator.isBroadcasting)&&(modelLocator.allowVideo))
+					modelLocator.broadcastDownStream.attachCamera(modelLocator.camera);	
+			}
+			
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:VGroup width="100%" gap="10" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+		<s:VGroup width="100%">
+			<s:HGroup width="100%">
+				<s:CheckBox id="cbxVideoPermit" change="cbxVideoPermit_changeHandler(event)" label="Video" selected="{modelLocator.allowVideo}" enabled="{modelLocator.mode == null &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting &amp;&amp; modelLocator.camera}"/>
+				<s:DropDownList selectedIndex="{modelLocator.cameraIndex}" enabled="{modelLocator.allowVideo &amp;&amp; !modelLocator.isBroadcasting}" id="cmbCameras" dataProvider="{modelLocator.cameras}" minWidth="220" width="100%" change="onCameraChanged(event)" />
+			</s:HGroup>
+			<s:HGroup width="100%">
+				<s:Label text="Fps" width="70"/>
+				<s:ComboBox styleName="editableComboBox" change="cmbFps_changeHandler(event)" selectedIndex="{modelLocator.selectedFpsIndex}" enabled="{modelLocator.allowVideo &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting}" width="100%" minWidth="220" id="cmbFps" dataProvider="{modelLocator.fps}" labelField="fps" ></s:ComboBox>
+			</s:HGroup>
+			<s:Spacer height="10"/>
+		</s:VGroup>
+		
+	</s:VGroup>
+	
+</s:Group>

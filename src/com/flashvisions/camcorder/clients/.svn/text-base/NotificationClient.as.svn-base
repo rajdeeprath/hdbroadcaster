@@ -1,0 +1,57 @@
+package com.flashvisions.camcorder.clients
+{
+	import com.adobe.serialization.json.JSON;
+	
+	import flash.events.EventDispatcher;
+	import flash.external.ExternalInterface;
+	import flash.system.Security;
+	
+	import mx.collections.ArrayCollection;
+	
+	
+	public class NotificationClient extends EventDispatcher 
+	{
+		private var listeners:ArrayCollection = new ArrayCollection();;
+		
+		public function NotificationClient()
+		{
+			super();
+			initialize();
+		}
+		
+		private function initialize():void
+		{
+			ExternalInterface.addCallback("addNotificationListener",this.addNotificationListener);
+			ExternalInterface.addCallback("removeNotificationListener",this.removeNotificationListener);
+		}
+		
+		public function addNotificationListener(event:String,callbackFunction:String):Boolean
+		{
+			if(listeners.contains({Notification:event,FunctionName:callbackFunction})) return false;
+			listeners.addItem({Notification:event,FunctionName:callbackFunction});	return true;
+		}
+		
+		public function removeNotificationListener(event:String,callbackFunction:String):Boolean
+		{
+			if(!listeners.contains({Notification:event,FunctionName:callbackFunction})) return false;
+			var found:Number = listeners.getItemIndex({Notification:event,FunctionName:callbackFunction});
+			
+			if(found >=0){listeners.removeItemAt(found); return true;}
+			else return false;
+		}
+		
+		public function sendNotification(notification:String,params:Object=null):void
+		{
+			var data:String = (params != null)?JSON.encode(params):null;
+			for(var j:int=0; j<listeners.length;j++)
+			if(listeners.getItemAt(j).Notification == notification)
+			ExternalInterface.call(listeners.getItemAt(j).FunctionName,ExternalInterface.objectID,data);
+		}
+		
+		public function notifyGlobal(notification:String,params:Object=null):void
+		{
+			var data:String = (params != null)?JSON.encode(params):null;
+			ExternalInterface.call(notification,ExternalInterface.objectID);
+		}
+	}
+}

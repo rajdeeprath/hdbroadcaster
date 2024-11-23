@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009"  xmlns:s="library://ns.adobe.com/flex/spark" xmlns:ns1="*" xmlns:view="com.flashvisions.camcorder.view.*">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.MicrophoneEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import com.flashvisions.commercial.flex.LicenceManager;
+			import com.flashvisions.commercial.flex.LicenceType;
+			
+			import flash.events.Event;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			protected function onAudioQualityChange(e:Event):void
+			{
+				modelLocator.micRate = cmbSampleRates.selectedItem.rate;	
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_INITIALIZE));
+			}
+			
+			protected function combobox1_changeHandler(event:Event):void
+			{
+				modelLocator.micIndex = cmbMicrophones.selectedIndex;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_ACQUIRE));
+			}
+			
+			protected function onMicVolumeChanged(event:Event):void
+			{
+				modelLocator.micGain = event.target.value;	
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_INITIALIZE));
+			}
+			
+			
+			protected function combobox2_changeHandler(event:Event):void
+			{	
+				modelLocator.audioCodec = modelLocator.audioFormats.getItemAt(cmbFormats.selectedIndex) as String;
+				modelLocator.mic.codec = modelLocator.audioCodec;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_INITIALIZE));
+			}
+			
+			protected function onQualityChanged(e:Event):void
+			{
+				modelLocator.encodeQuality = e.target.value;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.MICROPHONE_INITIALIZE));
+			}
+			
+			
+			protected function cbxAudioPermit_changeHandler(event:Event):void
+			{
+				modelLocator.allowAudio = cbxAudioPermit.selected;
+				
+				if((modelLocator.isBroadcasting)&&(!modelLocator.allowAudio))
+					modelLocator.broadcastDownStream.attachAudio(null);
+				else if((modelLocator.isBroadcasting)&&(modelLocator.allowAudio))
+					modelLocator.broadcastDownStream.attachAudio(modelLocator.mic);
+			}
+			
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.SHOWECHOCONTROL));
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	
+	<s:VGroup width="100%" gap="10" paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5">
+		
+		<s:HGroup  width="100%" verticalAlign="middle">
+			<s:CheckBox id="cbxAudioPermit" change="cbxAudioPermit_changeHandler(event)" label="Audio" selected="{modelLocator.allowAudio}" enabled="{modelLocator.mode == null &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting &amp;&amp; modelLocator.mic}" width="80"/>
+			<s:HGroup  width="100%" verticalAlign="middle">
+				<view:VUMeter width="100%" height="2" value="{modelLocator.micActiivity/100}" enabled="{modelLocator.micActiivity>=0}" alpha="{(modelLocator.micActiivity>=0)?1:.2}" visible="{modelLocator.isBroadcasting}" />
+				<!--<ns1:VolumeGauge height="2" width="195" value="{modelLocator.micActiivity/100}" enabled="{modelLocator.micActiivity>=0}" alpha="{(modelLocator.micActiivity>=0)?1:.2}" visible="{modelLocator.isBroadcasting}" /> -->
+				<s:Button width="20" height="20" click="button1_clickHandler(event)"
+						  fontWeight="normal" skinClass="com.flashvisions.skins.MicrophoneOptions" buttonMode="true" enabled="{modelLocator.isConnected &amp;&amp; modelLocator.allowAudio}"/>
+			</s:HGroup>
+			
+		</s:HGroup>
+		
+		
+		
+		
+		
+		<s:VGroup width="100%">
+			
+			<s:HGroup verticalAlign="middle" width="100%">
+				<s:Label text="Device" width="80"/>
+				<s:DropDownList selectedIndex="{modelLocator.micIndex}" enabled="{modelLocator.allowAudio &amp;&amp; !modelLocator.isBroadcasting}" id="cmbMicrophones" width="100%" minWidth="220" dataProvider="{modelLocator.microphones}" change="combobox1_changeHandler(event)" />
+			</s:HGroup>
+			
+			<s:HGroup verticalAlign="middle" width="100%">
+				<s:Label text="Codec" width="80"/>
+				<s:DropDownList enabled="{modelLocator.allowAudio &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting}" id="cmbFormats" width="100%" minWidth="220" dataProvider="{modelLocator.audioFormats}" change="combobox2_changeHandler(event)" selectedIndex="{modelLocator.selectedAudioCodecIndex}" />
+			</s:HGroup>
+			
+			<s:HGroup verticalAlign="middle" width="100%">
+				<s:Label text="Sample Rate" width="80"/>
+				<s:DropDownList selectedIndex="{modelLocator.selectedMicRatesIndex}" id="cmbSampleRates"  enabled="{modelLocator.audioCodec != SoundCodec.SPEEX &amp;&amp; modelLocator.allowAudio &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting}" width="100%" minWidth="220" dataProvider="{modelLocator.micRates}" change="onAudioQualityChange(event)" />
+			</s:HGroup>
+			<s:Spacer width="100%" height="1"/>
+			
+			<s:HGroup verticalAlign="middle" width="100%">
+				<s:Label text="Mic Boost" width="80"/>
+				<s:HSlider enabled="{modelLocator.allowAudio}" width="100%" minWidth="220" value="{modelLocator.micGain}" maximum="100" minimum="1" change="onMicVolumeChanged(event)" snapInterval="1"/>
+			</s:HGroup>
+			
+			<s:HGroup verticalAlign="middle" visible="{modelLocator.audioCodec == SoundCodec.SPEEX}" width="100%" minWidth="220">
+				<s:Label text="Mic Quality" width="80"/>
+				<s:HSlider enabled="{modelLocator.allowAudio &amp;&amp; !modelLocator.disableInteraction &amp;&amp; !modelLocator.isBroadcasting}" width="100%" minWidth="220" value="{modelLocator.encodeQuality}" maximum="10" minimum="0" change="onQualityChanged(event)" snapInterval="1"/>
+			</s:HGroup>
+			
+			<s:Spacer height="10"/>
+			
+		</s:VGroup>
+		
+	</s:VGroup>
+	
+</s:Group>

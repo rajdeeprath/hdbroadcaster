@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="10">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.MicrophoneEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import com.flashvisions.commercial.flex.LicenceManager;
+			import com.flashvisions.commercial.flex.LicenceType;
+			
+			import mx.events.Event;
+			import mx.events.SliderEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			protected function onAudioQualityChange(e:Event):void
+			{
+				modelLocator.micRate = cmbSampleRates.selectedItem.rate;	
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.INITIALIZE));
+			}
+
+			protected function combobox1_changeHandler(event:Event):void
+			{
+				modelLocator.micIndex = cmbMicrophones.selectedIndex;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.ACQUIRE));
+			}
+			
+			protected function onMicVolumeChanged(event:SliderEvent):void
+			{
+				modelLocator.micGain = event.value;	
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.INITIALIZE));
+			}
+
+
+			protected function combobox2_changeHandler(event:Event):void
+			{	
+				modelLocator.audioCodec = modelLocator.audioFormats.getItemAt(cmbFormats.selectedIndex) as String;
+				modelLocator.mic.codec = modelLocator.audioCodec;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.INITIALIZE));
+			}
+			
+			protected function onQualityChanged(e:SliderEvent):void
+			{
+				modelLocator.encodeQuality = e.value;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.INITIALIZE));
+			}
+
+
+			protected function cbxAudioPermit_changeHandler(event:Event):void
+			{
+				modelLocator.allowAudio = cbxAudioPermit.selected;
+				
+				if((modelLocator.isBroadcasting)&&(!modelLocator.allowAudio))
+				modelLocator.broadcastDownStream.attachAudio(null);
+				else if((modelLocator.isBroadcasting)&&(modelLocator.allowAudio))
+				modelLocator.broadcastDownStream.attachAudio(modelLocator.mic);
+			}
+
+
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="cbxAudioPermit" change="cbxAudioPermit_changeHandler(event)" label="Audio" selected="{modelLocator.allowAudio}" enabled="{modelLocator.mode == null}"/>
+	<mx:VBox width="100%">
+		<mx:HBox verticalAlign="middle" width="100%">
+			<mx:Label text="Device" width="80"/>
+			<mx:ComboBox enabled="{modelLocator.allowAudio}" id="cmbMicrophones" width="250" dataProvider="{modelLocator.microphones}" change="combobox1_changeHandler(event)" />
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle" width="100%">
+			<mx:Label text="Format" width="80"/>
+			<mx:ComboBox enabled="{modelLocator.allowAudio &amp;&amp; (modelLocator.appmode == LicenceType.REGISTERED)}" id="cmbFormats" width="100%" dataProvider="{modelLocator.audioFormats}" change="combobox2_changeHandler(event)"></mx:ComboBox>
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle" width="100%">
+			<mx:Label text="Sample Rate" width="80"/>
+			<mx:ComboBox selectedIndex="{modelLocator.selectedMicRatesIndex}" id="cmbSampleRates" enabled="{modelLocator.audioCodec != SoundCodec.SPEEX &amp;&amp; modelLocator.allowAudio}" width="100%" dataProvider="{modelLocator.micRates}" editable="false" change="onAudioQualityChange(event)" ></mx:ComboBox>
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle" width="100%">
+			<mx:Label text="Mic Volume" width="80"/>
+			<mx:HSlider enabled="{modelLocator.allowAudio}" width="100%" value="{modelLocator.micGain}" maximum="100" minimum="1" change="onMicVolumeChanged(event)" snapInterval="1"/>
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle" visible="{modelLocator.audioCodec == SoundCodec.SPEEX}" width="100%">
+			<mx:Label text="Mic Quality" width="80"/>
+			<mx:HSlider enabled="{modelLocator.allowAudio}" width="100%" value="{modelLocator.encodeQuality}" maximum="10" minimum="0" change="onQualityChanged(event)" snapInterval="1"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>

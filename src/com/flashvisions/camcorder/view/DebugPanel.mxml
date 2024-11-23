@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" creationComplete="init()"
+		 width="100%" height="100%" xmlns:view="com.flashvisions.camcorder.view.*" >
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			import flash.events.Event;
+			import mx.binding.utils.ChangeWatcher;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			[Bindable]
+			public var log:String="";
+			
+			private function init():void
+			{
+				ChangeWatcher.watch(modelLocator.logger.log,"length",onChange);
+				log = modelLocator.logger.data;
+			}
+			
+			private function onChange(e:Event):void
+			{
+				log = modelLocator.logger.data;
+			}
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				modelLocator.logger.clear();
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout  horizontalAlign="center" gap="2"   />
+	</s:layout>
+	
+	<view:BroadcastMetricsPanel width="100%" />
+	<s:TextArea selectable="false" id="txtLog" width="100%" height="100%" text="{log}" editable="false" fontSize="10" fontWeight="normal" fontFamily="Arial"/>
+	
+	<s:HGroup width="100%" verticalAlign="middle" paddingLeft="1" paddingTop="1" paddingBottom="1" paddingRight="1" height="25" horizontalAlign="right">
+		<s:Button label="Clear Output" click="button1_clickHandler(event)" height="20"/>
+	</s:HGroup>
+	
+	<s:Spacer height="20"/>
+	
+</s:Group>

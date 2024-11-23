@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox currentState="{(modelLocator.videoURL == null)?'CameraView':'PlayerView'}" xmlns:ns1="com.flashvisions.camcorder.view.*" 
+		 xmlns:mx="http://www.adobe.com/2006/mxml" width="400" height="300" horizontalAlign="center" verticalGap="2" paddingBottom="5" xmlns:components="com.flashvisions.components.*" backgroundColor="#D0CECE" xmlns:ns2="*" backgroundAlpha="0.5">
+	<mx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+
+			]]>
+	</mx:Script>
+	<mx:states>
+		<mx:State name="CameraView">
+			<mx:AddChild position="lastChild">
+				<mx:HBox width="100%" verticalAlign="middle" height="22" paddingRight="10">
+				<mx:HBox width="100%" height="25" id="hbox1">
+				</mx:HBox>
+				<mx:Label text="{(modelLocator.isConnected)?'Connected':'Not Connected'}" fontSize="12" width="100" textAlign="right" height="20" id="label1"/>
+				<ns2:LED width="15" height="15" State="{(modelLocator.isConnected)?'on':'off'}" id="led1"/>
+				</mx:HBox>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<ns1:VideoCamView width="380" height="260" Cam="{modelLocator.localCamera}"  id="videocamview1" />
+			</mx:AddChild>
+		</mx:State>
+		<mx:State name="PlayerView">
+			<mx:AddChild position="lastChild">
+				<mx:HBox width="100%" verticalAlign="middle" height="22" paddingRight="10" horizontalAlign="right">
+					<mx:Button label="X" click="{modelLocator.videoURL = null}" width="35" height="20" toolTip="{'Click to close player and return to camera view'}"/>
+				</mx:HBox>
+			</mx:AddChild>
+			<mx:AddChild position="lastChild">
+				<ns1:VideoPlayer width="380" height="260" videoURL="{modelLocator.videoURL}" />
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+</mx:VBox>

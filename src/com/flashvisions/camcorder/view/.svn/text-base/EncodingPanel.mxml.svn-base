@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" xmlns:view="com.flashvisions.camcorder.view.*">
+	<mx:HBox width="100%" styleName="stripe">
+		<view:PresetPanel />
+		<mx:Spacer width="100%"/>
+		<view:PreviewControl />
+	</mx:HBox>
+	<mx:HBox verticalAlign="top" borderStyle="none" horizontalGap="5" width="100%">
+		<mx:VBox verticalGap="2" width="50%">
+			<view:VideoPanel  borderStyle="none" width="100%"/>
+			<view:BitrateDisplay  width="100%"/>
+		</mx:VBox>
+		<mx:Spacer width="100%"/>
+		<mx:VRule height="100%"/>
+		<mx:Spacer width="100%"/>
+		<view:AudioPanel width="50%"/>
+	</mx:HBox>
+</mx:VBox>

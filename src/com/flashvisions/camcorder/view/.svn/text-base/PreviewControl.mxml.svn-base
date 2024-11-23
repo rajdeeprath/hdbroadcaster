@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.Protocol;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+		]]>
+	</mx:Script>
+	<mx:Label text="Preview"/>
+	<mx:CheckBox enabled="{modelLocator.protocol != Protocol.RTMFP}" id="cbxPreviewAudio" label="Audio" height="20" selected="{modelLocator.previewAudio}" change="{modelLocator.previewAudio = cbxPreviewAudio.selected}"/>
+	<mx:CheckBox enabled="{modelLocator.protocol != Protocol.RTMFP}" id="cbxPreviewVideo" label="Video" height="20" selected="{modelLocator.previewVideo}" change="{modelLocator.previewVideo = cbxPreviewVideo.selected}"/>
+</mx:HBox>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar
+	xmlns:mx="http://www.adobe.com/2006/mxml" height="80" xmlns:ns1="*" verticalAlign="middle">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.event.MicrophoneEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import mx.events.SliderEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			private function audioQualityDataTip(value:Number):Object 
+			{ 
+				return  modelLocator.audioRates.getItemAt(value).label;
+			}
+			
+			private function micGainDataTip(value:Number):Object 
+			{ 
+				return  int(value) + "kHz";
+			}
+			
+			private function videoQualityDataTip(value:Number):Object 
+			{
+				return  int(value);
+			}
+			
+			
+			/* Event Handlers */
+			
+			private function audioQualityChanged(e:SliderEvent):void
+			{
+				modelLocator.audioQuality = sldrAudioQuality.value;
+				modelLocator.micRate = modelLocator.audioRates.getItemAt(sldrAudioQuality.value).data as int;
+				modelLocator.logger.writeLog("Audio Quality Changed :"+modelLocator.audioQuality);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.INITIALIZE));
+			}
+			
+			private function videoQualityChanged(e:SliderEvent):void
+			{
+				modelLocator.videoQuality = sldrVideoQuality.value;
+				modelLocator.logger.writeLog("Video Quality Changed :"+modelLocator.videoQuality);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+			
+			private function cameraChanged(event:Event):void
+			{
+				modelLocator.cameraIndex = cmbCameras.selectedItem.data;
+				modelLocator.logger.writeLog("Camera Changed");
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.SOURCE_CHANGE));
+				
+			}
+
+			protected function microphoneChanged(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				modelLocator.micIndex = cmbMicrophones.selectedItem.data;
+				modelLocator.logger.writeLog("Microphone Changed");
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.SOURCE_CHANGE));
+			}
+			
+			protected function videoPermissionChanged(e:Event):void
+			{
+				modelLocator.allowVideo = cbxAllowVideo.selected;
+				modelLocator.logger.writeLog("Video Permission Changed");
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+			}
+			
+			protected function audioPermissionChanged(e:Event):void
+			{
+				modelLocator.allowAudio = cbxAllowAudio.selected;
+				modelLocator.logger.writeLog("Audio Permission Changed");
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+			}
+			
+			protected function micGainChanged(e:Event):void
+			{
+				modelLocator.micGain = sldrMicBoost.value;
+				modelLocator.logger.writeLog("Mic Boost Changed");
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new MicrophoneEvent(MicrophoneEvent.INITIALIZE));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:HBox height="65" verticalAlign="middle" horizontalGap="4">
+				<mx:VBox height="100%" verticalAlign="middle">
+					<mx:CheckBox id="cbxAllowVideo" selected="{modelLocator.allowVideo}" change="videoPermissionChanged(event)" label="Video Broadcast" fontWeight="bold" height="25"/>
+					<mx:CheckBox id="cbxAllowAudio" selected="{modelLocator.allowAudio}" change="audioPermissionChanged(event)" label="Audio Broadcast" fontWeight="bold" height="25"/>
+				</mx:VBox>
+				<mx:VRule height="50"/>
+				<mx:VBox height="100%" horizontalAlign="left" verticalAlign="middle">
+					<mx:HBox width="100%" verticalAlign="middle" height="25">
+						<mx:Label text="Audio Meter" width="75" fontSize="10" fontWeight="bold" height="100%"/>
+						<ns1:VolumeGauge height="5" width="90" value="{modelLocator.micActiivity}" />
+					</mx:HBox>
+					<mx:HBox width="100%" verticalAlign="top" height="25">
+						<mx:Label text="Mic Boost" width="75" fontSize="10" fontWeight="bold" height="100%"/>
+						<mx:HSlider enabled="{modelLocator.mic != null &amp;&amp; modelLocator.allowAudio}" dataTipFormatFunction="micGainDataTip" id="sldrMicBoost" maximum="100" minimum="1" width="90" value="{modelLocator.micGain}" change="micGainChanged(event)" snapInterval="1" allowTrackClick="false"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VRule height="50"/>
+				<mx:VBox height="100%" verticalAlign="middle">
+					<mx:HBox width="100%" height="25">
+						<mx:Label text="Video Source" fontWeight="bold" height="100%"/>
+						<mx:ComboBox id="cmbCameras" change="cameraChanged(event)" width="120" labelField="label" dataProvider="{modelLocator.cameras}"  cornerRadius="0"/>
+					</mx:HBox>
+					<mx:HBox width="100%" height="25">
+						<mx:Label text="Audio Source" fontWeight="bold" height="100%"/>
+						<mx:ComboBox id="cmbMicrophones" width="120" labelField="label" change="microphoneChanged(event)" dataProvider="{modelLocator.microphones}"  cornerRadius="0"/>
+					</mx:HBox>
+				</mx:VBox>
+				<mx:VRule height="50"/>
+				<mx:VBox height="100%" verticalAlign="middle">
+					<mx:HBox width="100%" verticalAlign="top" fontWeight="bold" height="25">
+						<mx:Label text="Video Quality" height="100%"/>
+						<mx:HSlider enabled="{modelLocator.camera != null &amp;&amp; modelLocator.allowVideo}" dataTipFormatFunction="videoQualityDataTip" id="sldrVideoQuality" width="90" value="{modelLocator.videoQuality}" change="videoQualityChanged(event)" maximum="100" minimum="1" snapInterval="1" allowTrackClick="false"/>
+					</mx:HBox>
+					<mx:HBox width="100%" verticalAlign="top" height="25">
+						<mx:Label text="Audio Quality" fontWeight="bold" height="100%"/>
+						<mx:HSlider enabled="{modelLocator.mic != null &amp;&amp; modelLocator.allowAudio}" dataTipFormatFunction="audioQualityDataTip" id="sldrAudioQuality" width="90" value="{modelLocator.audioQuality}" change="audioQualityChanged(event)" maximum="4" snapInterval="1" minimum="0" allowTrackClick="false"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+</mx:ApplicationControlBar>

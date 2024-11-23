@@ -1,0 +1,68 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.business.SaveSessionDelegate;
+	import com.flashvisions.camcorder.clients.NotificationClient;
+	import com.flashvisions.camcorder.event.ApplicationEvent;
+	import com.flashvisions.camcorder.event.BroadcastEvent;
+	import com.flashvisions.camcorder.event.CameraEvent;
+	import com.flashvisions.camcorder.event.LicenceEvent;
+	import com.flashvisions.camcorder.event.NotificationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	import com.flashvisions.camcorder.view.BwCheckUI;
+	import com.flashvisions.remoting.RemotingConnection;
+	
+	import flash.display.Bitmap;
+	import flash.display.DisplayObject;
+	import flash.external.ExternalInterface;
+	import flash.net.Responder;
+	import flash.net.URLLoader;
+	import flash.utils.ByteArray;
+	
+	
+	import mx.core.FlexGlobals;
+	import mx.graphics.ImageSnapshot;
+	import mx.graphics.codec.JPEGEncoder;
+	import mx.managers.PopUpManager;
+	import mx.rpc.IResponder;
+	import mx.utils.URLUtil;
+	
+	public class BroadcastSaveCommand implements ICommand, IResponder
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		private var modalDialog:*;
+		private var ba:ByteArray;
+		private var duration:Number;
+		private var autoConfigUI:BwCheckUI;
+		
+		public function execute(event:CairngormEvent):void
+		{
+			//if(modelLocator.isBroadcasting)CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+			ba =  modelLocator.imageEncoder.encode(modelLocator.snapshot);
+			duration = modelLocator.durationMonitor.currentCount;
+			var saveDelegate:SaveSessionDelegate = new SaveSessionDelegate(this);
+			saveDelegate.saveSession(modelLocator.configuration,modelLocator.publishName,ba,duration,modelLocator.broadcastConnection.uri);
+		}
+		
+		/* Responder Methods */
+		
+		public function result(event:Object):void
+		{
+			ba.clear();if(modelLocator.snapshot != null) modelLocator.snapshot.dispose(); modelLocator.snapshot = null;
+			CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.SAVESUCCESS));
+			CairngormEventDispatcher.getInstance().dispatchEvent(new NotificationEvent(BroadcastEvent.SAVESUCCESS,modelLocator.publishName,duration));
+		}
+		
+		public function fault(event:Object):void
+		{
+			ba.clear();if(modelLocator.snapshot != null) modelLocator.snapshot.dispose(); modelLocator.snapshot = null;
+			CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.SAVEFAILED));
+			CairngormEventDispatcher.getInstance().dispatchEvent(new NotificationEvent(BroadcastEvent.SAVEFAILED,modelLocator.publishName,duration));
+		}
+	}
+	
+	
+}

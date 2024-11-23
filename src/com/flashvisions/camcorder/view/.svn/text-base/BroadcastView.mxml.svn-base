@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance(); 
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.START));
+			}
+
+
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				modelLocator.wasPublishing = false;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+			}
+			
+
+		]]>
+	</mx:Script>
+	<mx:Button label="Start" click="button1_clickHandler(event)" height="35" enabled="{!modelLocator.isBroadcasting &amp;&amp; ((modelLocator.allowVideo &amp;&amp; modelLocator.camera != null &amp;&amp; !modelLocator.camera.muted) || (modelLocator.allowAudio &amp;&amp; modelLocator.mic != null &amp;&amp; !modelLocator.mic.muted)) &amp;&amp; modelLocator.isConnected}" width="150"/>
+	<mx:Button label="Stop" click="button2_clickHandler(event)" height="35" enabled="{modelLocator.isBroadcasting}" width="150"/>
+	<mx:Spacer width="100%"/>
+	<mx:Image id="logo" height="35" scaleContent="true" source="{modelLocator.logo}" visible="false" complete="{logo.visible = true}"/>
+</mx:HBox>

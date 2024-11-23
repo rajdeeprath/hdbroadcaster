@@ -1,0 +1,76 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.event.ApplicationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	import com.flashvisions.camcorder.server.RTMPServerType;
+	import com.flashvisions.camcorder.server.bwcheck.red5.BWCheck;
+	import com.flashvisions.camcorder.server.bwcheck.red5.events.BandwidthDetectEvent;
+	import com.flashvisions.camcorder.view.BwCheckUI;
+	
+	import flash.display.DisplayObject;
+	import flash.events.Event;
+	import mx.core.FlexGlobals;
+	import mx.managers.PopUpManager;
+	
+	public class BandwidthCheckCommand implements ICommand
+	{
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		private var autoConfigUI:BwCheckUI;
+		
+		public function execute(event:CairngormEvent):void
+		{
+			modelLocator.serverType = modelLocator.serverType.toLowerCase();
+			if(modelLocator.detectedBandWidth > 0)return;
+			
+			switch(modelLocator.serverType)
+			{
+				case RTMPServerType.RED5:
+					var bwCheck:BWCheck = new BWCheck(); 
+					bwCheck.serverURL = modelLocator.bwCheck;
+					bwCheck.clientServerService = "bwCheckService.onClientBWCheck";
+					bwCheck.serverClientService = "bwCheckService.onServerClientBWCheck";
+					bwCheck.addEventListener(BandwidthDetectEvent.SERVER_CLIENT_BANDWIDTH,onUplinkBandwidth);
+					bwCheck.addEventListener(BandwidthDetectEvent.DETECT_FAILED,onBWFailed);
+					bwCheck.connect();
+				break;
+				
+				case RTMPServerType.WOWZA:
+				break;
+				
+				case RTMPServerType.FMS:
+				break;
+			}
+			
+			createUI();
+		}
+		
+		protected function createUI():void
+		{
+			autoConfigUI = PopUpManager.createPopUp(FlexGlobals.topLevelApplication as DisplayObject,BwCheckUI,true) as BwCheckUI;
+			autoConfigUI.message = "CHECKING CONNECTION"
+			PopUpManager.centerPopUp(autoConfigUI);
+		}
+		
+		protected function removeUI():void
+		{
+			PopUpManager.removePopUp(autoConfigUI);
+		}
+		
+		/* Event Handlers */
+		
+		private function onUplinkBandwidth(event:BandwidthDetectEvent):void
+		{
+			removeUI();
+			CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.BANDWIDTHDETECTED,event.info.kbitDown));
+		}
+		
+		private function onBWFailed(event:BandwidthDetectEvent):void
+		{
+			removeUI();
+			modelLocator.detectedBandWidth = 0;
+		}
+	}
+}

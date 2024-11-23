@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<presets>
+	<sd>
+		<preset>
+			<label>SD AVERAGE</label>
+			<width>120</width>
+			<height>90</height>
+			<fps>10</fps>
+			<keyframeInterval>30</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>18000</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>4</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD GOOD</label>
+			<width>160</width>
+			<height>120</height>
+			<fps>10</fps>
+			<keyframeInterval>25</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>25000</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>5</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD HQVGA</label>
+			<width>240</width>
+			<height>160</height>
+			<fps>10</fps>
+			<keyframeInterval>25</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>37500</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>5</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD SIF LOW</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>8</fps>
+			<keyframeInterval>24</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>43750</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>5</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD SIF MEDIUM</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>10</fps>
+			<keyframeInterval>25</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>56250</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD SIF HIGH</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>12</fps>
+			<keyframeInterval>24</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>72500</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD SIF BEST</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>15</fps>
+			<keyframeInterval>35</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>81250</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD CIF SIF LOW</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>8</fps>
+			<keyframeInterval>24</keyframeInterval>
+			<quality>89</quality>
+			<bandwidth>56250</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD CIF SIF MEDIUM</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>10</fps>
+			<keyframeInterval>25</keyframeInterval>
+			<quality>89</quality>
+			<bandwidth>68750</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD CIF SIF HIGH</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>12</fps>
+			<keyframeInterval>24</keyframeInterval>
+			<quality>89</quality>
+			<bandwidth>75000</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD CIF SIF BEST</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>15</fps>
+			<keyframeInterval>30</keyframeInterval>
+			<quality>89</quality>
+			<bandwidth>93750</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD 480P LOW</label>
+			<width>640</width>
+			<height>480</height>
+			<fps>8</fps>
+			<keyframeInterval>24</keyframeInterval>
+			<quality>88</quality>
+			<bandwidth>100000</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>SD 480P MEDIUM</label>
+			<width>640</width>
+			<height>480</height>
+			<fps>10</fps>
+			<keyframeInterval>24</keyframeInterval>
+			<quality>88</quality>
+			<bandwidth>118750</bandwidth>
+			<videocodec>Sorenson</videocodec>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+	</sd>
+
+
+	<hd>
+	
+		<preset>
+			<label>HD 480P</label>
+			<width>640</width>
+			<height>480</height>
+			<fps>20</fps>
+			<keyframeInterval>160</keyframeInterval>
+			<quality>85</quality>
+			<bandwidth>150000</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.2</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD 360P</label>
+			<width>640</width>
+			<height>360</height>
+			<fps>20</fps>
+			<keyframeInterval>160</keyframeInterval>
+			<quality>85</quality>
+			<bandwidth>125000</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.2</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD CIF SIF NTSC</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>30</fps>
+			<keyframeInterval>240</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>112500</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>7</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD CIF SIF HIGH</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>24</fps>
+			<keyframeInterval>168</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>100000</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>7</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD CIF SIF GOOD</label>
+			<width>352</width>
+			<height>288</height>
+			<fps>20</fps>
+			<keyframeInterval>100</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>43750</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD SIF PAL</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>24</fps>
+			<keyframeInterval>192</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>75000</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>7</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD SIF HIGH</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>20</fps>
+			<keyframeInterval>120</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>62500</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>7</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD SIF GOOD</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>15</fps>
+			<keyframeInterval>90</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>43750</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD SIF LOW</label>
+			<width>320</width>
+			<height>240</height>
+			<fps>12</fps>
+			<keyframeInterval>105</keyframeInterval>
+			<quality>90</quality>
+			<bandwidth>37500</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>3.1</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>6</speexquality>
+		</preset>
+	
+	
+		<preset>
+			<label>HD HQVGA</label>
+			<width>240</width>
+			<height>160</height>
+			<fps>15</fps>
+			<keyframeInterval>75</keyframeInterval>
+			<quality>95</quality>
+			<bandwidth>22500</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>1.3</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>5</speexquality>
+		</preset>
+		
+		<preset>
+			<label>HD BASIC</label>
+			<width>176</width>
+			<height>144</height>
+			<fps>15</fps>
+			<keyframeInterval>75</keyframeInterval>
+			<quality>95</quality>
+			<bandwidth>18000</bandwidth>
+			<videocodec>H264Avc</videocodec>
+			<h264profile>baseline</h264profile>
+			<h264level>1.3</h264level>
+			<audiocodec>Speex</audiocodec>
+			<samplerate>16</samplerate>
+			<speexquality>5</speexquality>
+		</preset>
+		
+	</hd>
+</presets>

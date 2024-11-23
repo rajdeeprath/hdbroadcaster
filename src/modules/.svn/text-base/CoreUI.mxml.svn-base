@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" xmlns:ns2="*" xmlns:ns1="com.flashvisions.camcorder.view.*">
+	<mx:Script>
+		<![CDATA[
+		import com.adobe.cairngorm.control.CairngormEventDispatcher;
+		import com.flashvisions.camcorder.event.ApplicationEvent;
+		import com.flashvisions.camcorder.event.BroadcastEvent;
+		import com.flashvisions.camcorder.model.BroadcastModelLocator;
+		
+		import mx.events.FlexEvent;
+		import mx.events.Event;
+		import mx.rpc.events.FaultEvent;
+		import mx.rpc.events.ResultEvent;
+		
+		
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		private function init():void
+		{
+		CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.STARTUP));
+		}
+		
+		]]>
+	</mx:Script>
+	<mx:VBox id="CoreContainer" bottom="5" left="5" right="5" top="8">
+		<mx:VBox horizontalAlign="center" verticalAlign="middle" width="100%">
+			<mx:HBox height="100%" width="100%" paddingLeft="25" paddingRight="25" paddingTop="3" paddingBottom="3">
+				<ns1:CameraView />
+				<mx:Spacer width="100%"/>
+				<ns1:PlaybackView />
+			</mx:HBox>
+		</mx:VBox>
+		<mx:HRule width="100%"/>
+		<mx:HBox width="100%" verticalAlign="middle">
+			<mx:TabBar dataProvider="{encodingpanels}" />
+			<mx:Spacer width="100%" />
+		</mx:HBox>
+		<mx:ViewStack id="encodingpanels" borderStyle="none" width="100%">
+			<ns1:EncodingPanel label="Encoding Options" width="100%"/>
+			<ns1:DebugPanel width="100%" height="100%" label="Logs" enabled="{modelLocator.debugMode}"/>
+		</mx:ViewStack>
+		<mx:HRule width="100%"/>
+		<ns1:BroadcastView width="100%"/>
+	</mx:VBox>
+</mx:Module>

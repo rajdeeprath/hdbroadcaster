@@ -1,0 +1,9 @@
+package com.flashvisions.camcorder.clients
+{
+	public class StreamClient
+	{
+		public function StreamClient()
+		{
+		}
+	}
+}

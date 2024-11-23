@@ -1,0 +1,57 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.CryptoCode;
+	import com.flashvisions.camcorder.Aspect;
+	import com.flashvisions.camcorder.event.ApplicationEvent;
+	import com.flashvisions.camcorder.event.LicenceEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	import com.flashvisions.camcorder.server.RTMPServerType;
+	import com.flashvisions.remoting.RemotingConnection;
+	
+	import flash.external.ExternalInterface;
+	import flash.net.Responder;
+	import flash.net.URLLoader;
+	
+	
+	
+	public class ConfigurationSuccessCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		public function execute(event:CairngormEvent):void
+		{
+			var applicationEvent:ApplicationEvent = event as ApplicationEvent;
+			var result:Object = applicationEvent.params[0];
+			
+			modelLocator.publishName = decrypt((result.publishName != undefined &&  result.publishName !=null)?result.publishName:null);
+			modelLocator.destination = decrypt(result.destination);
+			modelLocator.maxRecordDuration = (result.broadcastTime == null)?0:result.broadcastTime;
+			modelLocator.broadcastMode = BroadcastModelLocator.BROADCASTMODE;
+			modelLocator.licence = result.licencekey;
+			modelLocator.bwCheck = (result.bwcheck == null)?null:result.bwcheck;
+			modelLocator.serverType = (result.server == null)?RTMPServerType.RED5:result.server;
+			modelLocator.mode = result.recordMode as String;
+			modelLocator.debugMode = (result.debug)?result.debug as Boolean:false;
+			modelLocator.logo = (result.logo)?result.logo:null;
+			modelLocator.autoSnapInterval = (result.autoSnapInterval && result.autoSnapInterval>5)?result.autoSnapInterval:0;
+			
+			modelLocator.logger.writeLog("Configuration Loaded:--------- ");
+			CairngormEventDispatcher.getInstance().dispatchEvent(new LicenceEvent(LicenceEvent.VALIDATE,modelLocator.licence));
+		}
+		
+		private function decrypt(data:Object):String
+		{
+			var keyCode:String = modelLocator.configuration.timecode;
+			if (!keyCode || !data) return data as String;
+			var decrypter:CryptoCode = new CryptoCode(keyCode);
+			var decrypted:String = decrypter.decrypt(data as String);
+			decrypter = null;
+			
+			return decrypted;
+		}
+	}
+}

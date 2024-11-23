@@ -1,0 +1,71 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.event.CameraEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	
+	import flash.events.Event;
+	import flash.events.StatusEvent;
+	import flash.external.ExternalInterface;
+	import flash.media.Camera;
+	import flash.system.Security;
+	import flash.system.SecurityPanel;
+	
+	
+	
+	public class CameraAcquisitionCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		public function execute(event:CairngormEvent):void
+		{
+			acquireCamera();
+		}
+		
+		private function acquireCamera():void
+		{
+			try
+			{
+				modelLocator.camera = Camera.getCamera(String(modelLocator.cameraIndex));
+				if(modelLocator.camera == null) throw new Error("No Camera Found !");
+				
+				if(!modelLocator.camera.hasEventListener(StatusEvent.STATUS))
+				modelLocator.camera.addEventListener(StatusEvent.STATUS, onCameraStatus);
+				modelLocator.camera.setLoopback(true);
+				
+				if(modelLocator.camera.muted) Security.showSettings(SecurityPanel.PRIVACY);
+				else deviceOk();
+				
+			}
+			catch(e:Error)
+			{
+				Alert.show(e.message);
+			}
+		}
+		
+		private function deviceOk():void
+		{			
+			modelLocator.allowVideo = true;
+			modelLocator.logger.writeLog("Camera selected : "+modelLocator.camera.name);
+			CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+		}
+		
+		private function deviceNotOk():void
+		{
+			modelLocator.allowVideo = false;
+			acquireCamera();
+		}
+		
+		
+		/* Event Handler */
+	
+		private function onCameraStatus(event:StatusEvent):void
+		{
+			if (event.code == "Camera.Unmuted")deviceOk();
+			else if (event.code == "Camera.Muted")deviceNotOk();
+		}
+	}
+}

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox paddingLeft="5" paddingRight="5" paddingTop="5" paddingBottom="5" xmlns:mx="http://www.adobe.com/2006/mxml" verticalGap="10">
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import mx.events.Event;
+			import mx.events.SliderEvent;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			
+			protected function combobox1_changeHandler(event:Event):void
+			{
+				modelLocator.cameraWidth = cmbResolutions.selectedItem.width;
+				modelLocator.cameraHeight = cmbResolutions.selectedItem.height;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+			
+			protected function onCameraChanged(event:Event):void
+			{
+				modelLocator.cameraIndex = cmbCameras.selectedIndex;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.ACQUIRE));
+			}
+
+
+			protected function cmbFps_changeHandler(event:Event):void
+			{
+				if(cmbFps.selectedIndex < 0){
+					modelLocator.cameraFPS = parseInt(cmbFps.text);	
+				}
+				else{					
+					modelLocator.selectedFpsIndex = cmbFps.selectedIndex;
+					modelLocator.cameraFPS = cmbFps.selectedItem.fps;
+				} 
+				
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+			
+			
+			protected function onQualityChanged(e:SliderEvent):void
+			{
+				modelLocator.videoQuality = e.value;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.INITIALIZE));
+			}
+
+			protected function cbxVideoPermit_changeHandler(event:Event):void
+			{
+				modelLocator.allowVideo = cbxVideoPermit.selected;
+				
+				if((modelLocator.isBroadcasting)&&(!modelLocator.allowVideo))
+				modelLocator.broadcastDownStream.attachCamera(null);
+				else if((modelLocator.isBroadcasting)&&(modelLocator.allowVideo))
+				modelLocator.broadcastDownStream.attachCamera(modelLocator.camera);	
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:CheckBox id="cbxVideoPermit" change="cbxVideoPermit_changeHandler(event)" label="Video" selected="{modelLocator.allowVideo}" enabled="{modelLocator.mode == null}"/>
+	<mx:VBox width="100%">
+		<mx:HBox width="100%">
+			<mx:Label text="Device" width="70"/>
+			<mx:ComboBox enabled="{modelLocator.allowVideo}" id="cmbCameras" dataProvider="{modelLocator.cameras}" width="250" change="onCameraChanged(event)"></mx:ComboBox>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="Resolution" width="70"/>
+			<mx:ComboBox textAlign="left" selectedIndex="{modelLocator.selecedResolutionIndex}" enabled="{modelLocator.allowVideo}" id="cmbResolutions" width="100%" dataProvider="{modelLocator.resolution}" change="combobox1_changeHandler(event)"></mx:ComboBox>
+		</mx:HBox>
+		<mx:HBox width="100%">
+			<mx:Label text="Fps" width="70"/>
+			<mx:ComboBox change="cmbFps_changeHandler(event)" selectedIndex="{modelLocator.selectedFpsIndex}" enabled="{modelLocator.allowVideo}" width="100%" id="cmbFps" dataProvider="{modelLocator.fps}" labelField="fps"></mx:ComboBox>
+		</mx:HBox>
+		<mx:HBox verticalAlign="middle" width="100%">
+			<mx:Label text="Quality" width="70"/>
+			<mx:HSlider enabled="{modelLocator.allowVideo}" width="100%" value="{modelLocator.videoQuality}" maximum="100" minimum="1" change="onQualityChanged(event)" snapInterval="1"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:VBox>

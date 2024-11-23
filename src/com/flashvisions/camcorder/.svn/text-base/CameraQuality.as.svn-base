@@ -1,0 +1,20 @@
+package com.flashvisions.camcorder
+{
+	public class CameraQuality
+	{
+		public static const STANDARDMAX:String = "480P";
+		public static const STANDARDBEST:String = "STANDARD BEST";
+		public static const STANDARDHIGH:String = "360P";
+		public static const STANDARDGOOD:String = "STANDARD GOOD";
+		public static const STANDARD:String = "240P";
+		public static const WEBBEST:String = "WEB BEST";
+		public static const WEBHIGH:String = "WEB HIGH";
+		public static const WEBGOOD:String = "WEB GOOD";
+		public static const WEBAVERAGE:String = "WEB AVERAGE";
+		public static const WEBLOW:String = "WEB LOW";
+		
+		public function CameraQuality()
+		{
+		}
+	}
+}

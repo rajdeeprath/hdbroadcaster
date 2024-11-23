@@ -1,0 +1,24 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.event.BroadcastEvent;
+	import com.flashvisions.camcorder.event.CameraEvent;
+	import com.flashvisions.camcorder.event.NotificationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	
+	public class StreamBeginCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		public function execute(event:CairngormEvent):void
+		{
+			modelLocator.isBroadcasting = true;
+			modelLocator.durationMonitor.reset();modelLocator.durationMonitor.start();
+			CairngormEventDispatcher.getInstance().dispatchEvent(new CameraEvent(CameraEvent.SNAPSHOT));
+			CairngormEventDispatcher.getInstance().dispatchEvent(new NotificationEvent(BroadcastEvent.START,modelLocator.broadcastMode,modelLocator.publishName));
+		}
+	}
+}

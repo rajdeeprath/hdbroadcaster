@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:TitleWindow xmlns:fx="http://ns.adobe.com/mxml/2009"
+			   xmlns:s="library://ns.adobe.com/flex/spark"
+			   width="{_width}" height="{_height}" minWidth="300" minHeight="130" maxWidth="400"
+			   preinitialize="titlewindow1_preinitializeHandler(event)" fontSize="16" title="{_title}" close="titlewindow1_closeHandler(event)">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	
+	<fx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import mx.core.FlexGlobals;
+			import mx.core.IFlexDisplayObject;
+			import mx.events.CloseEvent;
+			import mx.events.FlexEvent;
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			private var _width:Number = 300;
+			
+			[Bindable]
+			private var _height:Number = 130;
+			
+			[Bindable]
+			private var _title:String;
+			
+			[Bindable]
+			private var _message:String = '';
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				Alert.hide(this);
+			}
+			
+			public function get Message():String
+			{
+				return _message;
+			}
+			
+			public function set Message(msg:String):void
+			{
+				_message = msg;
+			}
+			
+			public function get Title():String
+			{
+				return _title;
+			}
+			
+			public function set Title(title:String):void
+			{
+				_title = title;
+			}
+			
+			protected function titlewindow1_closeHandler(event:CloseEvent):void
+			{
+				Alert.hide(this);
+			}
+			
+			protected function titlewindow1_preinitializeHandler(event:FlexEvent):void
+			{
+				var flashVars:Object = modelLocator.configuration;
+				var themeColor:* = flashVars.themeColor;
+				var contentBackgroundColor:* = flashVars.contentBackgroundColor;
+				var chromeColor:* = flashVars.chromeColor;
+				var textColor:* = flashVars.textColor;
+				
+				if(themeColor)
+				this.setStyle("backgroundColor", "#"+themeColor);
+				
+				if(chromeColor)
+				this.setStyle("chromeColor", "#"+chromeColor);
+				
+				if(contentBackgroundColor)
+				this.setStyle("contentBackgroundColor", "#"+contentBackgroundColor);
+				
+				if(textColor)
+				this.setStyle("color", "#"+textColor);
+				
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+		<s:VGroup paddingBottom="5" paddingLeft="5" paddingRight="5" paddingTop="5"  width="100%" height="100%">
+			<s:RichText width="100%" height="100%" fontFamily="Arial" fontSize="14" text="{_message}"
+						textAlign="center" verticalAlign="middle"/>	
+		</s:VGroup>
+		
+		<s:HGroup width="100%" horizontalAlign="center" paddingBottom="5" paddingLeft="5"
+				  paddingRight="5" verticalAlign="middle">
+			<s:Button label="Ok" width="50" click="button1_clickHandler(event)"/>	
+		</s:HGroup>
+	
+</s:TitleWindow>

@@ -1,0 +1,53 @@
+package com.flashvisions.camcorder.commands
+{
+	import com.adobe.cairngorm.commands.ICommand;
+	import com.adobe.cairngorm.control.CairngormEvent;
+	import com.adobe.cairngorm.control.CairngormEventDispatcher;
+	import com.flashvisions.camcorder.event.ApplicationEvent;
+	import com.flashvisions.camcorder.event.NotificationEvent;
+	import com.flashvisions.camcorder.model.BroadcastModelLocator;
+	
+	import flash.events.Event;
+	import flash.events.IEventDispatcher;
+	
+	import mx.core.FlexGlobals;
+	import mx.events.StyleEvent;
+	import mx.styles.StyleManager;
+	
+	public class ApplicationSkinCommand implements ICommand
+	{
+		[Bindable]
+		private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+		
+		public function execute(event:CairngormEvent):void
+		{
+			if((FlexGlobals.topLevelApplication.parameters.skin != null)&&(FlexGlobals.topLevelApplication.parameters.skin != undefined))loadSkin(FlexGlobals.topLevelApplication.parameters.skin);
+			else modelLocator.currentState = BroadcastModelLocator.READY;
+		}
+		
+		public function loadSkin(skinURL:String):void
+		{
+			try{
+			var eventDispatcher:IEventDispatcher = StyleManager.loadStyleDeclarations(skinURL);
+			eventDispatcher.addEventListener (StyleEvent.ERROR,  onSkinError,false,0,true);
+			eventDispatcher.addEventListener(StyleEvent.COMPLETE, onSkinLoaded,false,0,true);
+			}catch(e:Error){
+				// NO-OP
+			}
+		}
+		
+		/* Event handlers */
+		
+		private function onSkinError(e:Event):void
+		{
+			CairngormEventDispatcher.getInstance().dispatchEvent(new NotificationEvent(ApplicationEvent.SKINERROR));
+			modelLocator.currentState = BroadcastModelLocator.READY;
+		}
+		
+		private function onSkinLoaded(e:Event):void
+		{
+			CairngormEventDispatcher.getInstance().dispatchEvent(new NotificationEvent(ApplicationEvent.SKINLOADED));
+			modelLocator.currentState = BroadcastModelLocator.READY;
+		}
+	}
+}

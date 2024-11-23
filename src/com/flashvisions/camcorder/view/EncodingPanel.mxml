@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" xmlns:view="com.flashvisions.camcorder.view.*" height="220">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:HGroup width="100%">
+		<view:PresetPanel />
+		<s:Spacer width="100%"/>
+		<view:PreviewControl />
+	</s:HGroup>
+	<s:HGroup verticalAlign="top" width="100%" height="100%">
+		<view:VideoPanel width="100%" height="100%"/>
+		<s:VRule height="100%"/>
+		<view:AudioPanel width="100%" height="100%"/>
+	</s:HGroup>
+	
+</s:Group>

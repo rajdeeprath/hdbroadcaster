@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox paddingRight="5" paddingBottom="5" paddingLeft="5" paddingTop="5" 
+		  xmlns:mx="http://www.adobe.com/2006/mxml"
+		 xmlns:components="com.flashvisions.components.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.ConnectionEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				if(!modelLocator.isConnected)CairngormEventDispatcher.getInstance().dispatchEvent(new ConnectionEvent(ConnectionEvent.CONNECT,ddListDestinations.selectedItem.data as String));
+				else CairngormEventDispatcher.getInstance().dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECT));
+			}
+
+
+			protected function ddListPublishMode_changeHandler(event:Event):void
+			{
+				// TODO Auto-generated method stub
+				modelLocator.logger.writeLog("Publish mode changed - "+ddListPublishMode.selectedItem.data);
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				modelLocator.broadcastMode = ddListPublishMode.selectedItem.data as String;
+			}
+			
+			protected function destinationChanged(event:Event):void
+			{
+				modelLocator.logger.writeLog("Destination Changed");
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.STOP));
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ConnectionEvent(ConnectionEvent.DISCONNECT));
+			}
+
+		]]>
+	</mx:Script>
+	<mx:VBox paddingLeft="2" paddingRight="2">
+		<mx:HBox horizontalGap="15" height="25" verticalAlign="middle" paddingLeft="2" paddingRight="2">
+			<mx:Label text="Destination" width="120" fontSize="14" fontWeight="normal"/>
+			<mx:ComboBox id="ddListDestinations" change="destinationChanged(event)" selectedIndex="0" width="200" dataProvider="{modelLocator.destinations}"  cornerRadius="0"/>
+		</mx:HBox>
+		<mx:HBox horizontalGap="15" height="25" verticalAlign="middle" paddingLeft="2" paddingRight="2">
+			<mx:Label text="Broadcast Mode" width="120" fontSize="14" fontWeight="normal"/>
+			<mx:ComboBox id="ddListPublishMode" change="ddListPublishMode_changeHandler(event)"  width="200" selectedIndex="0" dataProvider="{modelLocator.broadcastModes}"  cornerRadius="0"/>
+		</mx:HBox>
+	</mx:VBox>
+	<mx:Button label="{(!modelLocator.isConnected)?'Connect':'Disconnect'}" click="button1_clickHandler(event)" width="130" height="55" cornerRadius="0"/>
+
+</mx:HBox>

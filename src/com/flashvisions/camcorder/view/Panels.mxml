@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark" xmlns:view="com.flashvisions.camcorder.view.*" creationComplete="group1_creationCompleteHandler(event)"
+		 width="100%">
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.event.ApplicationEvent;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			import mx.events.FlexEvent;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+			import spark.events.IndexChangeEvent;
+			
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();
+			
+			private function init():void
+			{
+				CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.STARTUP));
+			}
+			
+			protected function cbxAutoSense_changeHandler(event:Event):void
+			{
+				/*
+				if(!modelLocator.autosense)
+					CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.ACTIVATEAUTOSENSE));
+				else
+					CairngormEventDispatcher.getInstance().dispatchEvent(new ApplicationEvent(ApplicationEvent.DEACTIVATEAUTOSENSE));
+				*/
+			}
+			
+			protected function group1_creationCompleteHandler(event:FlexEvent):void
+			{
+				// disable debug panel on condition
+			}
+			
+			protected function buttonbar1_clickHandler(event:IndexChangeEvent):void
+			{
+				currentState = event.target.selectedItem;
+			}
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+	
+	<s:states>
+		<s:State name="Encoding" />
+		<s:State name="Debug" />
+	</s:states>
+	
+	<!--
+	<s:ButtonBar change="buttonbar1_clickHandler(event)" id="btnPanelNavigator">
+		<s:ArrayCollection>
+				<fx:String>Encoding</fx:String> 
+				<fx:String>Debug</fx:String>
+		</s:ArrayCollection>
+	</s:ButtonBar>
+	-->
+	
+	<s:VGroup includeIn="Encoding" width="100%" height="100%" minHeight="200">
+		<s:HGroup width="100%">
+			<view:PresetPanel/>
+			<s:Spacer width="10"/>
+			<!--<s:CheckBox id="cbxAutoSense" label="AutoSense" height="20" selected="{modelLocator.autosense}" change="cbxAutoSense_changeHandler(event)" enabled="{!modelLocator.enableAutoSense &amp;&amp; modelLocator.videoCodec == VideoCodec.SORENSON &amp;&amp; !modelLocator.isBroadcasting}"/>-->
+			<view:PreviewControl />
+		</s:HGroup>
+		<s:HGroup width="100%" verticalAlign="top">
+			<view:VideoPanel width="50%"/>
+			
+			<s:Line height="100%">
+				<s:stroke>
+					<s:SolidColorStroke color="black" weight="2" />
+				</s:stroke>
+			</s:Line>
+			
+			
+			<view:AudioPanel width="50%"/>
+		</s:HGroup>
+	</s:VGroup>
+	
+	<!-- <view:DebugPanel id="infoPanel" width="100%" height="100%" includeIn="Debug"/> -->
+	
+</s:Group>

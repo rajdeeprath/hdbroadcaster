@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ModuleLoader xmlns:mx="http://www.adobe.com/2006/mxml" backgroundColor="0x000000" url="modules/CameraView.swf" width="300" height="225" currentState="Loading" verticalAlign="middle" horizontalAlign="center" ready="{currentState=''}">
+	<mx:states>
+		<mx:State name="Loading">
+			<mx:AddChild position="lastChild">
+				<mx:SWFLoader source="@Embed(source='assets/progress.swf')" />
+			</mx:AddChild>
+		</mx:State>
+	</mx:states>
+</mx:ModuleLoader>

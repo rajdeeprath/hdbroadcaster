@@ -1,0 +1,18 @@
+package com.flashvisions.camcorder
+{
+	public class FrameRate
+	{
+		public static const DIALUP:String = "DialUp";
+		public static const WEB_SAFE:String = "Web Safe";
+		public static const WEB_LOW:String = "Web Low";
+		public static const WEB_AVERAGE:String = "Web Average";
+		public static const WEB_GOOD:String = "Web Good";
+		public static const WEB_BEST:String = "Web Best";
+		public static const PAL:String = "Pal";
+		public static const NTSC:String = "Ntsc";
+		
+		public function FrameRate()
+		{
+		}
+	}
+}

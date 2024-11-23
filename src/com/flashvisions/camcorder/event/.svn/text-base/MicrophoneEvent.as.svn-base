@@ -1,0 +1,27 @@
+package com.flashvisions.camcorder.event
+{
+	import com.adobe.cairngorm.control.CairngormEvent;
+	
+	import flash.events.Event;
+	
+	public class MicrophoneEvent extends CairngormEvent
+	{
+		public static const SOURCE_CHANGE:String = "MICROPHONESELECT";
+		public static const ACQUIRE:String = "MICROPHONEACQUIRE";
+		public static const INITIALIZE:String = "MICROPHONEINITIALIZE";
+		public static const DEINITIALIZE:String = "MICROPHONERELEASE";
+		
+		private var eventType:String;
+		
+		public function MicrophoneEvent(type:String)
+		{
+			eventType = type;
+			super(eventType);
+		}
+		
+		override public function clone() : Event
+		{
+			return new MicrophoneEvent(eventType);
+		}
+	}
+}

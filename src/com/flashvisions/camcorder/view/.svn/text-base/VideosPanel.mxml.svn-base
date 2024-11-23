@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%" xmlns:view="com.flashvisions.camcorder.view.*" horizontalGap="15">
+	<mx:Script>
+		<![CDATA[
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance();	
+
+			protected function videoitem1_clickHandler(event:MouseEvent):void
+			{
+				modelLocator.videoURL = VideoItem(event.currentTarget).videoURL;
+			}
+
+		]]>
+	</mx:Script>
+	<mx:Repeater dataProvider="{modelLocator.videoFeeds}" id="loop">
+		<view:VideoItem click="videoitem1_clickHandler(event)" source="{loop.currentItem.preview}" title="{loop.currentItem.label}" videoURL="{loop.currentItem.video}" description="{loop.currentItem.description}" />
+	</mx:Repeater>
+</mx:HBox>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Group xmlns:fx="http://ns.adobe.com/mxml/2009" 
+		 xmlns:s="library://ns.adobe.com/flex/spark">
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<fx:Script>
+		<![CDATA[
+			import com.adobe.cairngorm.control.CairngormEventDispatcher;
+			import com.flashvisions.camcorder.OperationMode;
+			import com.flashvisions.camcorder.event.BroadcastEvent;
+			import com.flashvisions.camcorder.event.CameraEvent;
+			import com.flashvisions.camcorder.model.BroadcastModelLocator;
+			
+			[Bindable]
+			private var modelLocator:BroadcastModelLocator = BroadcastModelLocator.getInstance(); 
+			
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTART));
+			}
+			
+			
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				// TODO Auto-generated method stub
+				modelLocator.wasPublishing = false;
+				CairngormEventDispatcher.getInstance().dispatchEvent(new BroadcastEvent(BroadcastEvent.BROADCASTSTOP));
+			}
+			
+
+			
+		]]>
+	</fx:Script>
+	
+	<s:layout>
+		<s:HorizontalLayout />
+	</s:layout>
+	
+	<s:Image id="logo" height="35" width="100" source="{modelLocator.logo}" visible="false" complete="{logo.visible = true}"/>
+	<s:Spacer width="100%"/>
+	<s:Button label="Start" click="button1_clickHandler(event)" height="35" enabled="{(modelLocator.isConnected) &amp;&amp; (!modelLocator.isBroadcasting) &amp;&amp; ( (modelLocator.allowVideo &amp;&amp; modelLocator.mode == OperationMode.VIDEO) || (modelLocator.allowAudio &amp;&amp; modelLocator.mode == OperationMode.AUDIO) || ((modelLocator.allowVideo &amp;&amp; modelLocator.allowAudio) &amp;&amp; modelLocator.mode == OperationMode.DUPLEX)  || ((modelLocator.allowAudio || modelLocator.allowVideo) &amp;&amp; modelLocator.mode == null))}" width="150"/>
+	<s:Button label="Stop" click="button2_clickHandler(event)" height="35" enabled="{modelLocator.isBroadcasting}" width="150"/>
+	
+</s:Group>
